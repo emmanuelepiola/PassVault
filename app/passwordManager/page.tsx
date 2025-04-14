@@ -393,7 +393,7 @@ export default function PasswordsPage() {
                       />
                       <div className="grid grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm text-black mb-1 text-base">User Name</label>
+                          <label className="block text-black mb-1 text-base">User Name</label>
                           <div className="flex items-center gap-2">
                             <div className="flex-1 relative">
                               <input
@@ -423,7 +423,7 @@ export default function PasswordsPage() {
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm text-black mb-1 text-base">Site</label>
+                          <label className="block text-black mb-1 text-base">Site</label>
                           <div className="flex items-center gap-2">
                             <div className="flex-1 relative">
                               <input
@@ -454,7 +454,7 @@ export default function PasswordsPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm text-black mb-1 text-base">Password</label>
+                        <label className="block text-black mb-1 text-base">Password</label>
                         <div className="flex items-center gap-2">
                           <div className="flex-1 relative">
                             <input
@@ -500,7 +500,7 @@ export default function PasswordsPage() {
                       </div>
                       {entry.isEditing && (
                         <div>
-                          <label className="block text-sm text-black mb-1 text-base">Custom parameters</label>
+                          <label className="block text-black mb-1 text-base">Custom parameters</label>
                           <div className="grid grid-cols-4 gap-2">
                             <input
                               type="text"
