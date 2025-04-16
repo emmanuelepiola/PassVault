@@ -12,12 +12,6 @@ interface PasswordEntry {
   isExpanded: boolean;
   isEditing: boolean;
   isSaved: boolean;
-  customParams?: {
-    length?: string;
-    numSpecialChars?: string;
-    preferredChars?: string;
-    passphrase?: string;
-  };
 }
 
 export default function PasswordsPage() {
@@ -77,13 +71,7 @@ export default function PasswordsPage() {
       site: '',
       isExpanded: true,
       isEditing: true,
-      isSaved: false,
-      customParams: {
-        length: '',
-        numSpecialChars: '',
-        preferredChars: '',
-        passphrase: ''
-      }
+      isSaved: false
     };
     setPasswords(prev => [newEntry, ...prev]);
   };
@@ -98,93 +86,23 @@ export default function PasswordsPage() {
     setPasswords(prev => prev.filter(p => p.id !== id));
   };
 
-  const validateCustomParams = (customParams?: PasswordEntry['customParams']) => {
-    if (!customParams) return null;
-
-    // If any custom parameter is set, validate all of them
-    const hasAnyParam = customParams.length || customParams.numSpecialChars || customParams.preferredChars;
-    
-    if (hasAnyParam) {
-      // Validate length
-      if (!customParams.length || isNaN(parseInt(customParams.length))) {
-        alert("Please specify a valid password length.");
-        return null;
-      }
-
-      const length = parseInt(customParams.length);
-      if (length < 20) {
-        if (!confirm("A password length under 20 characters is not recommended for security. Would you like to proceed anyway?")) {
-          return null;
-        }
-      }
-
-      // Validate number of special characters
-      if (!customParams.numSpecialChars || isNaN(parseInt(customParams.numSpecialChars))) {
-        alert("Please specify the number of special characters.");
-        return null;
-      }
-
-      const numSC = parseInt(customParams.numSpecialChars);
-      if (numSC < 2) {
-        alert("For better security, please set the number of special characters to at least 2.");
-        return null;
-      }
-
-      // Make sure number of special characters doesn't exceed password length
-      if (numSC > length) {
-        alert(`The number of special characters (${numSC}) cannot exceed the password length (${length}).`);
-        return null;
-      }
-
-      // Validate preferred special characters
-      if (!customParams.preferredChars) {
-        alert("Please specify your preferred special characters.");
-        return null;
-      }
-      if (customParams.preferredChars.length < 2) {
-        alert("Please provide at least 2 preferred special characters for better variety.");
-        return null;
-      }
-    }
-
-    return true;
-  };
-
   const generateRandomPassword = (
     length: number = Math.floor(Math.random() * 11) + 20, // Random length between 20-30
-    numSpecialChars: number = 2,
-    preferredChars: string = "!@#$%^&*()_+-=[]{}|;:,.<>?",
-    minUppercase: number = 2
   ) => {
     const lowercase = 'abcdefghijklmnopqrstuvwxyz';
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
-    const special = preferredChars || "!@#$%^&*()_+-=[]{}|;:,.<>?";
+    const special = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-    // Calculate minimum required length based on requirements
-    const minRequiredLength = minUppercase + numSpecialChars + 2; // 2 is for required numbers
-    if (length < minRequiredLength) {
-      alert(`The password length must be at least ${minRequiredLength} to accommodate all required characters (${minUppercase} uppercase, ${numSpecialChars} special characters, and 2 numbers).`);
-      return null;
-    }
-
-    // Ensure we have required uppercase and special characters
+    // Ensure we have at least 1 of each required character type
     let password = '';
-    for (let i = 0; i < minUppercase; i++) {
-      password += uppercase[Math.floor(Math.random() * uppercase.length)];
-    }
-    for (let i = 0; i < numSpecialChars; i++) {
-      password += special[Math.floor(Math.random() * special.length)];
-    }
-    // Add at least 2 numbers
-    for (let i = 0; i < 2; i++) {
-      password += numbers[Math.floor(Math.random() * numbers.length)];
-    }
+    password += uppercase[Math.floor(Math.random() * uppercase.length)]; // 1 uppercase
+    password += numbers[Math.floor(Math.random() * numbers.length)]; // 1 number
+    password += special[Math.floor(Math.random() * special.length)]; // 1 special char
 
-    // Fill the rest with random characters to match exact length
-    const remainingLength = length - password.length;
+    // Fill the rest with random characters
     const allChars = lowercase + uppercase + numbers + special;
-    for (let i = 0; i < remainingLength; i++) {
+    for (let i = 0; i < length - 3; i++) {
       password += allChars[Math.floor(Math.random() * allChars.length)];
     }
 
@@ -192,94 +110,17 @@ export default function PasswordsPage() {
     return password.split('').sort(() => Math.random() - 0.5).join('');
   };
 
-  const generatePassphrasePassword = (
-    passphrase: string, 
-    preferredChars: string = "!@#$%^&*()_+-=[]{}|;:,.<>?",
-    numSpecialChars: string = "2"
-  ): string | null => {
-    const words = passphrase.trim().split(/\s+/);
-    if (words.length > 20) {
-      alert("The passphrase contains more than 20 words. Please use a shorter phrase.");
-      return null;
-    }
-
-    // Validate number of special characters
-    const numSC = parseInt(numSpecialChars) || 0;
-    if (numSC === 0) {
-      alert("For better security, please set the number of special characters to at least 2.");
-      return null;
-    }
-
-    // Validate preferred special characters
-    if (preferredChars && preferredChars.length === 1) {
-      alert("Please provide at least 2 preferred special characters for better variety.");
-      return null;
-    }
-
-    // Get initials and randomly make them upper or lower case
-    let password = words.map(word => {
-      const initial = word.charAt(0);
-      return Math.random() > 0.5 ? initial.toUpperCase() : initial.toLowerCase();
-    }).join('');
-
-    // Add 2 random numbers
-    const numbers = '0123456789';
-    for (let i = 0; i < 2; i++) {
-      const pos = Math.floor(Math.random() * (password.length + 1));
-      password = password.slice(0, pos) + numbers[Math.floor(Math.random() * numbers.length)] + password.slice(pos);
-    }
-
-    // Add special characters based on custom parameters
-    const special = preferredChars || "!@#$%^&*()_+-=[]{}|;:,.<>?";
-    const actualNumSC = Math.max(numSC, 2); // Ensure at least 2 special characters
-    for (let i = 0; i < actualNumSC; i++) {
-      const pos = Math.floor(Math.random() * (password.length + 1));
-      password = password.slice(0, pos) + special[Math.floor(Math.random() * special.length)] + password.slice(pos);
-    }
-
-    return password;
-  };
-
   const handleGenerate = (id: string) => {
     const entry = passwords.find(p => p.id === id);
     if (!entry) return;
 
-    let newPassword = '';
-
-    // Check if there's a passphrase
-    if (entry.customParams?.passphrase) {
-      const passphraseResult = generatePassphrasePassword(
-        entry.customParams.passphrase,
-        entry.customParams?.preferredChars,
-        entry.customParams?.numSpecialChars
-      );
-      if (!passphraseResult) return;
-      newPassword = passphraseResult;
-    } else {
-      // Validate custom parameters if any are set
-      if (!validateCustomParams(entry.customParams)) return;
-
-      // Use custom parameters or defaults
-      const length = entry.customParams?.length ? parseInt(entry.customParams.length) : Math.floor(Math.random() * 11) + 20;
-      const numSpecialChars = entry.customParams?.numSpecialChars ? parseInt(entry.customParams.numSpecialChars) : 2;
-      const preferredChars = entry.customParams?.preferredChars;
-
-      // If any custom parameter is set, all must be set
-      if ((entry.customParams?.length || entry.customParams?.numSpecialChars || entry.customParams?.preferredChars) && 
-          (!entry.customParams?.length || !entry.customParams?.numSpecialChars || !entry.customParams?.preferredChars)) {
-        alert("If you set any custom parameter, you must set all of them (Length, Number of Special Characters, and Preferred Special Characters).");
-        return;
-      }
-
-      const generatedPassword = generateRandomPassword(length, numSpecialChars, preferredChars);
-      if (!generatedPassword) return; // Generation failed due to validation
-      newPassword = generatedPassword;
-    }
+    const generatedPassword = generateRandomPassword();
+    if (!generatedPassword) return;
 
     // Update the password in the state
     setPasswords(prev =>
       prev.map(p =>
-        p.id === id ? { ...p, password: newPassword } : p
+        p.id === id ? { ...p, password: generatedPassword } : p
       )
     );
 
@@ -498,101 +339,6 @@ export default function PasswordsPage() {
                           </div>
                         </div>
                       </div>
-                      {entry.isEditing && (
-                        <div>
-                          <label className="block text-black mb-1 text-base">Custom parameters</label>
-                          <div className="grid grid-cols-4 gap-2">
-                            <input
-                              type="text"
-                              placeholder="Length"
-                              className="p-2 bg-white rounded border border-black/5 focus:outline-none focus:ring-0"
-                              value={entry.customParams?.length || ''}
-                              onChange={(e) =>
-                                setPasswords(prev =>
-                                  prev.map(p =>
-                                    p.id === entry.id
-                                      ? {
-                                          ...p,
-                                          customParams: {
-                                            ...p.customParams,
-                                            length: e.target.value,
-                                          },
-                                        }
-                                      : p
-                                  )
-                                )
-                              }
-                              readOnly={!entry.isEditing}
-                            />
-                            <input
-                              type="text"
-                              placeholder="Number of SC"
-                              className="p-2 bg-white rounded border border-black/5 focus:outline-none focus:ring-0"
-                              value={entry.customParams?.numSpecialChars || ''}
-                              onChange={(e) =>
-                                setPasswords(prev =>
-                                  prev.map(p =>
-                                    p.id === entry.id
-                                      ? {
-                                          ...p,
-                                          customParams: {
-                                            ...p.customParams,
-                                            numSpecialChars: e.target.value,
-                                          },
-                                        }
-                                      : p
-                                  )
-                                )
-                              }
-                              readOnly={!entry.isEditing}
-                            />
-                            <input
-                              type="text"
-                              placeholder="Preferred SC"
-                              className="p-2 bg-white rounded border border-black/5 focus:outline-none focus:ring-0"
-                              value={entry.customParams?.preferredChars || ''}
-                              onChange={(e) =>
-                                setPasswords(prev =>
-                                  prev.map(p =>
-                                    p.id === entry.id
-                                      ? {
-                                          ...p,
-                                          customParams: {
-                                            ...p.customParams,
-                                            preferredChars: e.target.value,
-                                          },
-                                        }
-                                      : p
-                                  )
-                                )
-                              }
-                              readOnly={!entry.isEditing}
-                            />
-                            <input
-                              type="text"
-                              placeholder="Passphrase"
-                              className="p-2 bg-white rounded border border-black/5 focus:outline-none focus:ring-0"
-                              value={entry.customParams?.passphrase || ''}
-                              onChange={(e) =>
-                                setPasswords(prev =>
-                                  prev.map(p =>
-                                    p.id === entry.id
-                                      ? {
-                                          ...p,
-                                          customParams: {
-                                            ...p.customParams,
-                                            passphrase: e.target.value,
-                                          },
-                                        }
-                                      : p
-                                  )
-                                )
-                              }
-                              readOnly={!entry.isEditing}
-                            />
-                          </div>
-                        </div>
-                      )}
                       <div className="flex justify-center gap-4 pt-4">
                         {entry.isEditing ? (
                           <button
