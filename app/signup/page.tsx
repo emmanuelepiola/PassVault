@@ -1,30 +1,53 @@
 'use client';
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
+    setSuccess('');
+  
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-
+  
     if (password.length < 8) {
       setError('Password must be at least 8 characters long');
       return;
     }
+  
+    try {
+      const response = await fetch('http://localhost:8000/signupHandler', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      const responseBody = await response.json();
 
-    console.log('Signup attempted with:', { email, password });
+      if (response.ok) {
+        setSuccess('Registration successful');
+      } else {
+        setError(responseBody.error || 'Failed to register user');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('An unexpected error occurred');
+    }
   };
 
   return (
@@ -116,6 +139,10 @@ export default function Signup() {
 
           {error && (
             <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
+
+          {success && (
+            <p className="text-green-500 text-sm text-center">{success}</p>
           )}
 
           <button

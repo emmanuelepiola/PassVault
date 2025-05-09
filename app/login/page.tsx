@@ -1,20 +1,72 @@
 'use\ client';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPasswordPage, setShowPasswordPage] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPasswordPage, setShowPasswordPage] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const router = useRouter();
   
-    const handleEmailSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      setShowPasswordPage(true);
-    };
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
   
-    const handlePasswordSubmit = (e: React.FormEvent) => {
+    try {
+      const response = await fetch('http://localhost:8000/checkEmailHandler', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+  
+      const responseBody = await response.json();
+  
+      if (response.ok) {
+        setSuccess('Email found! Proceed to enter your password.');
+        setShowPasswordPage(true); // Mostra la pagina della password
+      } else {
+        setError('Invalid email');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('An unexpected error occurred');
+    }
+  };
+  
+    const handlePasswordSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      console.log('Login attempted with:', { email, password });
+      setError('');
+      setSuccess('');
+  
+      try {
+        const response = await fetch('http://localhost:8000/loginHandler', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+  
+        const responseBody = await response.json();
+  
+        if (response.ok) {
+          setSuccess('Login successful! Redirecting...');
+          setTimeout(() => {
+            router.push('/passwordManager'); // Reindirizza alla pagina protetta
+          }, 2000); // Attendi 2 secondi prima di reindirizzare
+        } else {
+          setError('Invalid password');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setError('An unexpected error occurred');
+      }
     };
   
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -48,7 +100,13 @@ export default function Login() {
             <h1 className="text-[28px] font-medium text-center text-gray-900 mb-6">
               Login
             </h1>
-            
+
+            {/* Mostra l'email inserita */}
+          <div className="text-center text-gray-700 mb-4">
+            <p>You are logging in as:</p>
+            <p className="font-medium text-gray-900">{email}</p>
+          </div>
+          
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div>
                 <input
@@ -61,33 +119,14 @@ export default function Login() {
                   required
                 />
               </div>
-  
+
+              {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
               <button
                 type="submit"
                 className="w-full bg-[#54A9DA]/50 text-gray-900 py-3 px-4 rounded-[50px] hover:bg-[#4898c9]/50 transition-colors font-medium border border-black/5"
               >
                 Login
-              </button>
-  
-              <div className="relative py-2">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-black/5"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500 text-sm">Or</span>
-                </div>
-              </div>
-  
-              <button
-                type="button"
-                className="w-full flex items-center justify-center gap-2 bg-[#54A9DA]/30 text-gray-900 py-3 px-4 rounded-[50px] hover:bg-[#4898c9]/30 transition-colors font-medium border border-black/5"
-              >
-                <img 
-                  src="https://www.google.com/favicon.ico" 
-                  alt="Google" 
-                  className="w-5 h-5"
-                />
-                Sign in with Google
               </button>
             </form>
   
@@ -135,7 +174,9 @@ export default function Login() {
                 required
               />
             </div>
-  
+
+            {error && <p className="text-red-500 text-sm text-center">{error}</p>} {/* Mostra il messaggio di errore */}
+
             <button
               type="submit"
               className="w-full bg-[#54A9DA]/50 text-gray-900 py-3 px-4 rounded-[50px] hover:bg-[#4898c9]/50 transition-colors font-medium border border-black/5"
