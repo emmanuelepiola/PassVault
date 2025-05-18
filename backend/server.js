@@ -107,6 +107,55 @@ app.post('/checkEmailHandler', async (req, res) => {
   }
 });
 
+// Endpoint per generare una password sicura
+app.post('/generatePassword', (req, res) => {
+  const {
+    length = 12,
+    uppercase = true,
+    lowercase = true,
+    numbers = true,
+    symbols = true,
+  } = req.body;
+
+  let chars = '';
+  if (uppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (lowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+  if (numbers) chars += '0123456789';
+  if (symbols) chars += '!@#$%^&*()-_=+[]{};:,.<>?';
+
+  if (!chars) {
+    return res.status(400).json({ error: 'Nessun set di caratteri selezionato' });
+  }
+
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  res.json({ password });
+});
+
+app.post('/checkPasswordHealth', (req, res) => {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: 'Password is required' });
+  }
+
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+  if (/\d/.test(password)) score++;
+  if (/[!@#$%^&*()\-_=+\[\]{};:,.<>?]/.test(password)) score++;
+
+  // Classificazione: 1 = debole, 2 = media, 3 = forte
+  let health = 1;
+  if (score >= 3) health = 3;
+  else if (score === 2) health = 2;
+
+  res.json({ health });
+});
+
 // Avvia il server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
