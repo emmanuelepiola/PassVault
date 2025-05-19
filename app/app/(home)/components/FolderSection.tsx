@@ -10,6 +10,7 @@ type Folder = {
   label: string;
   icon: string;
   editable: boolean;
+  shared: boolean;
 };
 
 type Props = {
@@ -17,38 +18,46 @@ type Props = {
 };
 
 export default function FolderSection({ label }: Props) {
-  const [folders, setFolders] = useState<Folder[]>([]);
-  const { ID, setID } = useSelection();
-
+  const { folders, setFolders , ID, setID, updateFolder, postFolder } = useSelection();
+// ============================ ADD FOLDER ============================ //
   const addFolder = () => {
-    setID((parseInt(ID) + 1).toString())
+    setID((parseInt(ID) + 1).toString());
     const newFolder: Folder = {
       id: ID,
-      label: "New Folder",
-      icon: "folder",
-      editable: true, // sarà subito modificabile
+      label: label === "Shared" ? "Shared Folder" : "New Folder",
+      icon: label === "Shared" ? "folder_shared" : "folder",
+      editable: true,
+      shared: label === "Shared",
     };
-    setFolders([...folders, newFolder]);
+    postFolder(newFolder);
   };
-
-  const updateFolderLabel = (index: number, newLabel: string) => {
-    const updatedFolders = [...folders];
-    updatedFolders[index].label = newLabel;
-    updatedFolders[index].editable = false;
-    setFolders(updatedFolders);
+// ============================ FINE ADD FOLDER ============================ //
+// ============================ UPDATE FOLDER LABEL ============================ //
+  const updateFolderLabel = (id: string, newLabel: string) => {
+    folders.map(folder => {
+      if (folder.id === id) {
+        const updatedFolder: Folder = {id: id, label: newLabel, editable: false, shared: folder.shared, icon: folder.shared ? "folder_shared" : "folder"};
+        updateFolder(updatedFolder);
+      }
+    });
   };
+// ============================ FINE UPDATE FOLDER LABEL ============================ //
+  const filteredFolders = folders.filter(folder =>
+    label === "Shared" ? folder.shared : !folder.shared
+  );
 
   return (
     <div className="w-full text-l pt-[1rem]">
       <SideBarFolderLabel label={label} addFolder={addFolder} />
-      {folders.map((folder, i) => (
+      {filteredFolders.map((folder, i) => (
         <FolderButton
           key={i}
           id={folder.id}
           label={folder.label}
-          icon={folder.icon}
+          icon={folder.shared ? "folder_shared" : "folder"}
+          shared={folder.shared}
           editable={folder.editable}
-          onLabelChange={(newLabel) => updateFolderLabel(i, newLabel)}
+          onLabelChange={(newLabel) => updateFolderLabel(folder.id, newLabel)}
         />
       ))}
     </div>
