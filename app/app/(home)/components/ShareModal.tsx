@@ -1,7 +1,7 @@
 'use client'
 import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
-
+import { useSelection } from '../context';
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (value: boolean) => void;
@@ -10,6 +10,7 @@ type Props = {
   setShared: (value: boolean) => void;
   setSharedWith: (value: string[]) => void;
   sharedWith: string[]; // <-- aggiunto!
+  folderAccount: string;
 };
 
 export default function ShareModal({
@@ -19,11 +20,13 @@ export default function ShareModal({
   shared,
   setShared,
   setSharedWith,
-  sharedWith
+  sharedWith,
+  folderAccount
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [localSharedWith, setLocalSharedWith] = useState<string[]>([]);
-
+  const { account } = useSelection();
+  
   useEffect(() => {
     setMounted(true);
     setLocalSharedWith(sharedWith); // inizializza
@@ -33,7 +36,7 @@ export default function ShareModal({
 
   // ============================ SHARE TOGGLE ============================ //
   function handleShareToggle() {
-    if (shared) {
+    if (shared && folderAccount !== account) {
       setShared(false);
       setSharedWith(localSharedWith.filter((u) => u.trim() !== ''));
     } else {

@@ -12,9 +12,10 @@ type Props = {
   sharedWith: string[];
   onLabelChange: (newLabel: string) => void;
   editable: boolean;
+  folderAccount: string;
 };
 
-export default function FolderButton({ id, label, icon, onLabelChange, editable, shared, sharedWith }: Props) {
+export default function FolderButton({ id, label, icon, onLabelChange, editable, shared, sharedWith , folderAccount }: Props) {
   const { selection, setSelection, deleteFolder, updateFolder, account } = useSelection();
   const [isEditing, setIsEditing] = useState(editable);
   const [tempLabel, setTempLabel] = useState(label);
@@ -120,6 +121,7 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
             setIsModalOpen={setIsModalOpen}
             label={label}
             shared={shared}
+            folderAccount={folderAccount}
           />
         </div>
       </div>
