@@ -4,3 +4,15 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS password (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    tag VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    type VARCHAR(100),
+    folder VARCHAR(255),
+    security INTEGER CHECK (
+        security BETWEEN 1 AND 3
+    ),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
