@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
 export type Folder = {
+  account: string;
   id: string;
   label: string;
   shared: boolean;
@@ -11,6 +12,7 @@ export type Folder = {
 };
 
 export type Item = {
+  account: string;
   id: string;
   tag: string;
   website: string;
@@ -39,27 +41,27 @@ type SelectionContextType = {
   deleteItem: (id: string) => void;
   searchTerm: string;
   setSearchTerm: (value: string) => void;
+  account: string;
+  setAccount: (value: string) => void;
 };
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
 
-const Account: string = "user@gmail.com"
-
 const initialFolders = [
-  { id: "1", label: "Intrattenimento", shared: false, editable: false, sharedWith: ["user1", "user2", "user3", "user4"] },
-  { id: "2", label: "Lavoro", shared: true, editable: false, sharedWith: ["user1", "user2", "user3", "user4"] },
+  { account: "user@gmail.com", id: "1", label: "Intrattenimento", shared: false, editable: false, sharedWith: ["user1", "user2", "user3", "user4"] },
+  { account: "user@gmail.com", id: "2", label: "Lavoro", shared: true, editable: false, sharedWith: ["user1", "user2", "user3", "user4"] },
 ];
 
 const initialItems: Item[] = [
-  { id: "0", tag: "Amazon", website: "Amazon.com", securityLevel: "medium", folderID: "0", password: "password123", username: "username123" },
-  { id: "1", tag: "Disney+", website: "Disney.com", securityLevel: "low", folderID: "1", password: "password123", username: "username123" },
-  { id: "2", tag: "GitHub", website: "GitHub.com", securityLevel: "high", folderID: "2", password: "password123", username: "username123" },
-  { id: "3", tag: "Netflix", website: "Netflix.com", securityLevel: "medium", folderID: "1", password: "password123", username: "username123" },
+  { account: "user@gmail.com", id: "0", tag: "Amazon", website: "Amazon.com", securityLevel: "medium", folderID: "0", password: "password123", username: "username123" },
+  { account: "user@gmail.com", id: "1", tag: "Disney+", website: "Disney.com", securityLevel: "low", folderID: "1", password: "password123", username: "username123" },
+  { account: "user@gmail.com", id: "2", tag: "GitHub", website: "GitHub.com", securityLevel: "high", folderID: "2", password: "password123", username: "username123" },
+  { account: "user@gmail.com", id: "3", tag: "Netflix", website: "Netflix.com", securityLevel: "medium", folderID: "1", password: "password123", username: "username123" },
 ];
 
 
 export const SelectionProvider = ({ children }: { children: React.ReactNode }) => {
-  const [account, setAccount] = useState<string>();
+  const [account, setAccount] = useState<string>("user@gmail.com");
   const [selection, setSelection] = useState("All Items");
   const [ID, setID] = useState("5");
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -73,11 +75,14 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
   useEffect(() => {
     getFolders();
     getItems();
+    getAccount();
+    console.log(account);
   }, []);
 
   const getAccount = () => {
     // Simulazione GET
-    setAccount(Account);
+    setAccount(account);
+    
   };
 
   const getFolders = () => {
@@ -100,7 +105,6 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
     // post request per creare un nuovo item
     // comportamento simulato
     setItems([...items, value]);
-    console.log(value);
   }
 
   const updateFolder = (value: Folder) => {
@@ -129,7 +133,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
 
   return (
     <SelectionContext.Provider
-      value={{selection,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm}}
+      value={{selection,account,setAccount,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm}}
     >
       {children}
     </SelectionContext.Provider>
