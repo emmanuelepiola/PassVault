@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
-import { SelectionProvider } from '../context';
+import { SelectionProvider } from './context';
 import { useState, useRef } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -48,14 +48,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <html>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-          rel="stylesheet"
-        />
-      </head>
-      <body
+      <div
         className="h-[100dvh] w-[100dvw] overflow-hidden bg-white"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -94,7 +87,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </SelectionProvider>
-      </body>
-    </html>
+      </div>
   );
 }
