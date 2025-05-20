@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSelection } from "../context";
+import { useSelection } from "../../context";
 
 export default function Dashboard() {
   const { selection } = useSelection();
