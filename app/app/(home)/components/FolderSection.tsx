@@ -11,6 +11,7 @@ type Folder = {
   icon: string;
   editable: boolean;
   shared: boolean;
+  sharedWith: string[];
 };
 
 type Props = {
@@ -28,6 +29,7 @@ export default function FolderSection({ label }: Props) {
       icon: label === "Shared" ? "folder_shared" : "folder",
       editable: true,
       shared: label === "Shared",
+      sharedWith: [],
     };
     postFolder(newFolder);
   };
@@ -36,7 +38,7 @@ export default function FolderSection({ label }: Props) {
   const updateFolderLabel = (id: string, newLabel: string) => {
     folders.map(folder => {
       if (folder.id === id) {
-        const updatedFolder: Folder = {id: id, label: newLabel, editable: false, shared: folder.shared, icon: folder.shared ? "folder_shared" : "folder"};
+        const updatedFolder: Folder = {id: id, label: newLabel, editable: false, shared: folder.shared, icon: folder.shared ? "folder_shared" : "folder", sharedWith: folder.sharedWith};
         updateFolder(updatedFolder);
       }
     });
@@ -56,6 +58,7 @@ export default function FolderSection({ label }: Props) {
           label={folder.label}
           icon={folder.shared ? "folder_shared" : "folder"}
           shared={folder.shared}
+          sharedWith={folder.sharedWith}
           editable={folder.editable}
           onLabelChange={(newLabel) => updateFolderLabel(folder.id, newLabel)}
         />

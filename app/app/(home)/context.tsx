@@ -7,6 +7,7 @@ export type Folder = {
   label: string;
   shared: boolean;
   editable: boolean;
+  sharedWith: string[];
 };
 
 export type Item = {
@@ -36,13 +37,17 @@ type SelectionContextType = {
   updateItem: (value: Item) => void;
   deleteFolder: (id: string) => void;
   deleteItem: (id: string) => void;
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
 };
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
 
+const Account: string = "user@gmail.com"
+
 const initialFolders = [
-  { id: "1", label: "Intrattenimento", shared: false, editable: false },
-  { id: "2", label: "Lavoro", shared: true, editable: false },
+  { id: "1", label: "Intrattenimento", shared: false, editable: false, sharedWith: ["user1", "user2", "user3", "user4"] },
+  { id: "2", label: "Lavoro", shared: true, editable: false, sharedWith: ["user1", "user2", "user3", "user4"] },
 ];
 
 const initialItems: Item[] = [
@@ -54,9 +59,11 @@ const initialItems: Item[] = [
 
 
 export const SelectionProvider = ({ children }: { children: React.ReactNode }) => {
+  const [account, setAccount] = useState<string>();
   const [selection, setSelection] = useState("All Items");
   const [ID, setID] = useState("5");
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [items, setItems] = useState<Item[]>([]); // get simulated items
 
@@ -67,6 +74,11 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
     getFolders();
     getItems();
   }, []);
+
+  const getAccount = () => {
+    // Simulazione GET
+    setAccount(Account);
+  };
 
   const getFolders = () => {
     // Simulazione GET
@@ -88,6 +100,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
     // post request per creare un nuovo item
     // comportamento simulato
     setItems([...items, value]);
+    console.log(value);
   }
 
   const updateFolder = (value: Folder) => {
@@ -116,24 +129,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
 
   return (
     <SelectionContext.Provider
-      value={{
-        selection,
-        setSelection,
-        ID,
-        setID,
-        folders,
-        setFolders,
-        items,
-        setItems,
-        getFolders,
-        getItems,
-        postFolder,
-        postItem,
-        updateFolder,
-        updateItem,
-        deleteFolder,
-        deleteItem,
-      }}
+      value={{selection,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm}}
     >
       {children}
     </SelectionContext.Provider>

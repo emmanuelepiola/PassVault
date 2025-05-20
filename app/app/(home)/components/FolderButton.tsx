@@ -1,22 +1,25 @@
 'use client'
+
 import { useState, useRef, useEffect } from 'react';
 import { useSelection , Folder} from '../context';
+import ShareModal from './ShareModal';
 
 type Props = {
   id: string;
   label: string;
   icon: string;
   shared: boolean;
+  sharedWith: string[];
   onLabelChange: (newLabel: string) => void;
-  editable?: boolean;
+  editable: boolean;
 };
 
-export default function FolderButton({ id, label, icon, onLabelChange, editable, shared }: Props) {
+export default function FolderButton({ id, label, icon, onLabelChange, editable, shared, sharedWith }: Props) {
   const { selection, setSelection, deleteFolder, updateFolder } = useSelection();
   const [isEditing, setIsEditing] = useState(editable);
   const [tempLabel, setTempLabel] = useState(label);
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isSelected = selection === id;
 
   function handleClick() {
@@ -49,21 +52,22 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
     e.stopPropagation();
     console.log('delete folder', id);
     deleteFolder(id);
-
   }
-// ============================ SHARE/UNSHARE ============================ //
+// ============================ SHARE ============================ //
   function handleShare(e: React.MouseEvent) {
     e.stopPropagation();
-    if (!shared) {
-      const updatedFolder: Folder = {id: id,label: label, shared: true, editable: false};
-      updateFolder(updatedFolder);
-    }
-    else {
-      const updatedFolder: Folder = {id: id,label: label, shared: false, editable: false};
-      updateFolder(updatedFolder);
+    setIsModalOpen(true);
+  }
+  function setShared(bool: boolean){
+    shared = bool;
+  }
+  function setSharedWith(sharedWithMod: string[]){
+    if (sharedWithMod !== sharedWith){
+      const folder: Folder = {id: id, label: label, shared: shared, editable: editable, sharedWith: sharedWithMod}
+      updateFolder(folder);
     }
   }
-// ============================ FINE SHARE ============================ //
+  // ============================ FINE SHARE ============================ //
   return (
     <div
       onClick={handleClick}
@@ -102,12 +106,21 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
         </div>
 
         <div className="absolute right-[1.2rem] top-0">
-          <span
-            className={`material-symbols-outlined text-sm text-gray-400 cursor-pointer hover:${shared ? 'text-red-700' : 'text-green-700'}`}
+          <span 
+            className="material-symbols-outlined text-sm text-gray-400 cursor-pointer hover:text-green-700"
             onClick={handleShare}
           >
             link
           </span>
+          <ShareModal
+            sharedWith={sharedWith}
+            setSharedWith={setSharedWith}
+            setShared={setShared}
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+            label={label}
+            shared={shared}
+          />
         </div>
       </div>
     </div>
