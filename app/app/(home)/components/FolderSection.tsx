@@ -20,39 +20,44 @@ type Props = {
 };
 
 export default function FolderSection({ label }: Props) {
-  const { folders, setFolders , ID, setID, updateFolder, postFolder, account } = useSelection();
-// ============================ ADD FOLDER ============================ //
-  const addFolder = () => {
-    setID((parseInt(ID) + 1).toString());
-    const newFolder: Folder = {
-      account: account,
-      id: ID,
-      label: label === "Shared" ? "Shared Folder" : "New Folder",
-      icon: label === "Shared" ? "folder_shared" : "folder",
-      editable: true,
-      shared: label === "Shared",
-      sharedWith: [],
-    };
-    postFolder(newFolder);
+  const { folders, setFolders, ID, setID, updateFolder, postFolder, account } = useSelection();
+
+  const handleAddFolder = async (folderName: string) => {
+    await postFolder(folderName);
   };
-// ============================ FINE ADD FOLDER ============================ //
-// ============================ UPDATE FOLDER LABEL ============================ //
-  const updateFolderLabel = (id: string, newLabel: string) => {
-    folders.map(folder => {
-      if (folder.id === id) {
-        const updatedFolder: Folder = {account: account, id: id, label: newLabel, editable: false, shared: folder.shared, icon: folder.shared ? "folder_shared" : "folder", sharedWith: folder.sharedWith};
-        updateFolder(updatedFolder);
+
+  const updateFolderLabel = async (id: string, newLabel: string) => {
+    try {
+      const response = await fetch(`http://localhost:8000/updateFolder/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newLabel,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Nome della cartella aggiornato con successo');
+        setFolders((prevFolders) =>
+          prevFolders.map((folder) =>
+            folder.id === id ? { ...folder, label: newLabel } : folder
+          )
+        );
+      } else {
+        console.error('Errore durante l\'aggiornamento del nome della cartella');
       }
-    });
+    } catch (error) {
+      console.error('Errore durante l\'aggiornamento del nome della cartella:', error);
+    }
   };
-// ============================ FINE UPDATE FOLDER LABEL ============================ //
+
   const filteredFolders = folders.filter(folder =>
     label === "Shared" ? folder.shared : !folder.shared
   );
 
   return (
     <div className="w-full text-l pt-[1rem]">
-      <SideBarFolderLabel label={label} addFolder={addFolder} />
+      <SideBarFolderLabel label={label} addFolder={handleAddFolder} />
       {filteredFolders.map((folder, i) => (
         <FolderButton
           key={i}
@@ -63,6 +68,7 @@ export default function FolderSection({ label }: Props) {
           sharedWith={folder.sharedWith}
           editable={folder.editable}
           onLabelChange={(newLabel) => updateFolderLabel(folder.id, newLabel)}
+          folderAccount={folder.account}
         />
       ))}
     </div>

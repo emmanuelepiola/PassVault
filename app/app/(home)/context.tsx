@@ -33,7 +33,7 @@ type SelectionContextType = {
   setItems: (value: Item[]) => void;
   getFolders: () => void;
   getItems: () => void;
-  postFolder: (value: Folder) => void;
+  postFolder: (folderName: string) => void;
   postItem: (value: Item) => void;
   updateFolder: (value: Folder) => void;
   updateItem: (value: Item) => void;
@@ -95,17 +95,78 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
     setItems(initialItems);
   };
   
-  const postFolder = (value: Folder) => {
-    // post request per creare una nuova folder
-    // comportamento simulato
-    setFolders([...folders, value]);
+  const postFolder = async (folderName: string) => {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    console.error('Utente non loggato!');
+    return;
   }
 
-  const postItem = (value: Item) => {
-    // post request per creare un nuovo item
-    // comportamento simulato
-    setItems([...items, value]);
+  try {
+    const response = await fetch('http://localhost:8000/addFolder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: folderName,
+        user_id: userId,
+      }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log('Cartella aggiunta:', data);
+
+      setFolders((prevFolders) => [
+        ...prevFolders,
+        {
+          id: data.folder_id,
+          label: folderName,
+          account: account,
+          shared: false,
+          editable: true,
+          sharedWith: [],
+        },
+      ]);
+    } else {
+      console.error('Errore dal server:', data.error);
+    }
+  } catch (error) {
+    console.error('Errore durante la creazione della cartella:', error);
   }
+};
+
+const postItem = async (item: Item) => {
+  const userId = localStorage.getItem('userId'); // Recupera l'user_id salvato
+  if (!userId) {
+    console.error('Utente non loggato!');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:8000/addItem', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: userId,
+        tag: item.tag,
+        username: item.username,
+        password: item.password,
+        website: item.website,
+        folder_id: item.folderID && item.folderID !== '0' ? item.folderID : null, // Invia NULL se folderID non è valido
+      }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log('Item aggiunto:', data);
+      setItems((prevItems) => [...prevItems, item]); // Aggiorna lo stato locale
+    } else {
+      console.error('Errore dal server:', data.error);
+    }
+  } catch (error) {
+    console.error('Errore durante l\'aggiunta dell\'elemento:', error);
+  }
+};
 
   const updateFolder = (value: Folder) => {
     // put request per aggiornare una folder

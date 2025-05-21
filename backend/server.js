@@ -41,9 +41,11 @@ app.post('/signupHandler', async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO users (email, password) VALUES ($1, $2)';
-    await pool.query(query, [email, hashedPassword]);
-    res.status(201).json({ message: 'User registered successfully' });
+    const query = 'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id';
+    const result = await pool.query(query, [email, hashedPassword]);
+    const userId = result.rows[0].id;
+
+    res.status(201).json({ message: 'User registered successfully', user_id: userId });
   } catch (error) {
     if (error.code === '23505') {
       res.status(400).json({ error: 'Email already exists' });
@@ -63,14 +65,15 @@ app.post('/loginHandler', async (req, res) => {
   }
 
   try {
-    const query = 'SELECT password FROM users WHERE email = $1';
+    const query = 'SELECT id, email, password FROM users WHERE email = $1';
     const result = await pool.query(query, [email]);
 
     if (result.rows.length > 0) {
       const user = result.rows[0];
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (isPasswordValid) {
-        return res.status(200).json({ message: 'Login successful' });
+        // Restituisci l'id come identificatore utente
+        return res.status(200).json({ message: 'Login successful', user_id: user.id });
       } else {
         return res.status(401).json({ error: 'Invalid email or password' });
       }
@@ -115,26 +118,81 @@ app.post('/generatePassword', (req, res) => {
     lowercase = true,
     numbers = true,
     symbols = true,
+    uppercaseCount,
+    lowercaseCount,
+    numbersCount,
+    symbolsCount,
   } = req.body;
 
-  let chars = '';
-  if (uppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  if (lowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
-  if (numbers) chars += '0123456789';
-  if (symbols) chars += '!@#$%^&*()-_=+[]{};:,.<>?';
+  const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+  const numberChars = '0123456789';
+  const symbolChars = '!@#$%^&*()-_=+[]{};:,.<>?';
 
-  if (!chars) {
-    return res.status(400).json({ error: 'Nessun set di caratteri selezionato' });
+  // Determina se la modalità è custom per ogni categoria
+  const isUpperCustom = typeof uppercaseCount === 'number';
+  const isLowerCustom = typeof lowercaseCount === 'number';
+  const isNumCustom = typeof numbersCount === 'number';
+  const isSymCustom = typeof symbolsCount === 'number';
+
+  let passwordArray = [];
+
+  // Inserisci i caratteri custom richiesti
+  if (uppercase && isUpperCustom) {
+    for (let i = 0; i < uppercaseCount; i++) {
+      passwordArray.push(uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length)));
+    }
+  }
+  if (lowercase && isLowerCustom) {
+    for (let i = 0; i < lowercaseCount; i++) {
+      passwordArray.push(lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length)));
+    }
+  }
+  if (numbers && isNumCustom) {
+    for (let i = 0; i < numbersCount; i++) {
+      passwordArray.push(numberChars.charAt(Math.floor(Math.random() * numberChars.length)));
+    }
+  }
+  if (symbols && isSymCustom) {
+    for (let i = 0; i < symbolsCount; i++) {
+      passwordArray.push(symbolChars.charAt(Math.floor(Math.random() * symbolChars.length)));
+    }
   }
 
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  // Crea il pool SOLO con le categorie in modalità random
+  let randomPool = '';
+  if (uppercase && !isUpperCustom) randomPool += uppercaseChars;
+  if (lowercase && !isLowerCustom) randomPool += lowercaseChars;
+  if (numbers && !isNumCustom) randomPool += numberChars;
+  if (symbols && !isSymCustom) randomPool += symbolChars;
+
+  // Riempi il resto della password SOLO con caratteri dal pool random
+  while (passwordArray.length < length && randomPool.length > 0) {
+    passwordArray.push(randomPool.charAt(Math.floor(Math.random() * randomPool.length)));
   }
 
+  // Se la password è ancora troppo corta (es: tutte custom ma somma < length), riempi con tutte le categorie selezionate
+  let fallbackPool = '';
+  if (uppercase) fallbackPool += uppercaseChars;
+  if (lowercase) fallbackPool += lowercaseChars;
+  if (numbers) fallbackPool += numberChars;
+  if (symbols) fallbackPool += symbolChars;
+  while (passwordArray.length < length && fallbackPool.length > 0) {
+    passwordArray.push(fallbackPool.charAt(Math.floor(Math.random() * fallbackPool.length)));
+  }
+
+  // Mischia l'array per evitare pattern fissi
+  for (let i = passwordArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [passwordArray[i], passwordArray[j]] = [passwordArray[j], passwordArray[i]];
+  }
+
+  const password = passwordArray.slice(0, length).join('');
   res.json({ password });
 });
 
+
+// Endpoint utilizzabile per verificare il security level
 app.post('/checkPasswordHealth', (req, res) => {
   const { password } = req.body;
 
@@ -154,6 +212,95 @@ app.post('/checkPasswordHealth', (req, res) => {
   else if (score === 2) health = 2;
 
   res.json({ health });
+});
+
+function getPasswordHealth(password) {
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+  if (/\d/.test(password)) score++;
+  if (/[!@#$%^&*()\-_=+\[\]{};:,.<>?]/.test(password)) score++;
+
+  // Classificazione: 1 = debole, 2 = media, 3 = forte
+  if (score >= 3) return 3;
+  if (score === 2) return 2;
+  return 1;
+}
+
+app.post('/addItem', async (req, res) => {
+  const { user_id, tag, username, password, website, folder_id } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: 'User ID is required!' });
+  }
+
+  try {
+    const security = getPasswordHealth(password);
+
+    const validFolderId = folder_id && folder_id !== '0' ? folder_id : null;
+
+    await pool.query(
+      'INSERT INTO password (user_id, tag, username, password, website, folder_id, security) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+      [
+        user_id,
+        tag,
+        username,
+        password,
+        website, // Usa il campo website
+        validFolderId,
+        security,
+      ]
+    );
+    res.status(201).json({ message: 'Item aggiunto!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore nel salvataggio' });
+  }
+});
+
+app.post('/addFolder', async (req, res) => {
+  const { name, user_id } = req.body;
+
+  if (!name || !user_id) {
+    return res.status(400).json({ error: 'Name and User ID are required!' });
+  }
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO folders (name) VALUES ($1) RETURNING id',
+      [name]
+    );
+
+    const folderId = result.rows[0].id;
+
+    // Aggiungi la relazione tra la cartella e l'utente nella tabella folder_users
+    await pool.query(
+      'INSERT INTO folder_users (folder_id, user_id) VALUES ($1, $2)',
+      [folderId, user_id]
+    );
+
+    res.status(201).json({ message: 'Folder created successfully', folder_id: folderId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore nella creazione della cartella' });
+  }
+});
+
+app.put('/updateFolder/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required!' });
+  }
+
+  try {
+    await pool.query('UPDATE folders SET name = $1 WHERE id = $2', [name, id]);
+    res.status(200).json({ message: 'Folder name updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore durante l\'aggiornamento del nome della cartella' });
+  }
 });
 
 // Avvia il server
