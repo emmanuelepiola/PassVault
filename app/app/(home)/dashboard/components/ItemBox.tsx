@@ -30,7 +30,7 @@ export default function ItemBox() {
   const filteredItems = filteredBySelection.filter(matchesSearch);
 
   return (
-    <div className="w-full h-full pr-[2rem] pl-[2rem] flex flex-col gap-4">
+    <div className="px-0 md:px-0 flex flex-col gap-5">
       {filteredItems.map((item, index) => (
         <Item
           id={item.id}

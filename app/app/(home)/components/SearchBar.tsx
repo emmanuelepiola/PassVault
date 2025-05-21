@@ -10,12 +10,12 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="h-[4rem] w-full pl-[1rem] pr-[1rem] pt-[1rem] pb-[1rem]">
+    <div className="h-[3rem] md:h-[4rem] w-full md:pl-[1rem] md:pr-[1rem] md:pt-[1rem] md:pb-[1rem]">
       <div className="h-full w-full relative">
-        <span className="material-symbols-outlined absolute top-1 left-2">search</span>
+        <span className="material-symbols-outlined absolute md:top-1 top-3 left-2 text-gray-600">search</span>
         <form action="" className="h-full w-full" onSubmit={(e) => e.preventDefault()}>
           <input
-            className="border-2 border-black h-full w-full rounded-3xl pl-[2rem] pr-[1rem] outline-none"
+            className="border-1 bg-white border-gray-600 h-full w-full rounded-3xl pl-[2rem] pr-[1rem] outline-none"
             type="text"
             placeholder="Search"
             value={searchTerm}

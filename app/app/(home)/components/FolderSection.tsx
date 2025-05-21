@@ -60,6 +60,7 @@ export default function FolderSection({ label }: Props) {
       <SideBarFolderLabel label={label} addFolder={handleAddFolder} />
       {filteredFolders.map((folder, i) => (
         <FolderButton
+          folderAccount={account}
           key={i}
           id={folder.id}
           label={folder.label}

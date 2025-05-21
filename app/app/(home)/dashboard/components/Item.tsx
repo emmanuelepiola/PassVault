@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import DisplayModal from './DisplayModal';
-import { useSelection } from '../../context';
+import { useSelection } from "../../context";
 
 type SecurityLevel = 'low' | 'medium' | 'high';
 
@@ -60,7 +60,7 @@ export default function PasswordItem({
   return (
     <>
       <div
-        className="bg-white flex items-center justify-between px-8 w-full h-[4rem] border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+        className="bg-white flex items-center px-8 md:px-8 w-full h-[4rem] border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
         <div className="flex items-center justify-between w-full">
@@ -71,10 +71,11 @@ export default function PasswordItem({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="text-gray-600 hover:underline w-1/4 truncate"
+            className="hidden md:block text-gray-600 hover:underline w-1/4 truncate"
           >
             {getDisplayDomain(website)}
           </a>
+
 
           <div className="flex items-center gap-1 w-1/4">
             {getSecurityColors()
@@ -85,7 +86,7 @@ export default function PasswordItem({
           </div>
 
           <span
-            className="material-symbols-outlined cursor-pointer text-gray-500 hover:text-red-500"
+            className="material-symbols-outlined cursor-pointer text-gray-500 hover:text-red-500 ml-6"
             onClick={handleDeleteClick}
           >
             delete

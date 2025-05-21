@@ -14,20 +14,21 @@ export default function Dashboard() {
   useEffect(() => {
     if (selection === "Password Generator") {
       router.push("/password-generator");
-    }
-    else if (selection === "Settings") {
+    } else if (selection === "Settings") {
       router.push("/settings");
-    }
-    else {
+    } else {
       router.push("/dashboard");
     }
   }, [selection, router]);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full flex flex-col">
       <Label label="Dashboard" />
       <FieldsLabels />
-      <ItemBox />
+      <div className="flex-1 overflow-y-auto px-0 md:px-6">
+        <ItemBox />
+      </div>
     </div>
   );
 }
+

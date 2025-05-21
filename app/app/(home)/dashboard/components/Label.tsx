@@ -7,7 +7,7 @@ type props = {
 
 export default function Label({ label }: props){
     return(
-        <div className="ml-[2rem] mr-[2rem] pt-[1.8rem] pb-[1rem] relative">
+        <div className="mr-[2rem] ml-4 md:ml-[2rem] pt-[1.8rem] pb-[2rem] relative">
             <AddButton/>
             <label className="w-full block pb-0 text-4xl">{label}</label>
         </div>

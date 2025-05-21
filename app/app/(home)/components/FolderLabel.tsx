@@ -1,3 +1,5 @@
+'use client'
+
 type Props = {
   label: string;
   addFolder: (folderName: string) => void;
