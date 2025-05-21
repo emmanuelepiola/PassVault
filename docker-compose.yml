@@ -9,6 +9,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
+      - ./postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U francesco -d PV || exit 1"]
@@ -29,6 +30,8 @@ services:
       DB_PORT: 5432
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/usr/src/app
     depends_on:
       db:
         condition: service_healthy
@@ -40,4 +43,8 @@ services:
     container_name: app_server
     ports:
       - "3000:3000"
-    command: npm run dev
+    command: sh -c "npm install tw-animate-css && npm run dev"
+    volumes:
+      - ./app:/usr/src/app
+volumes:
+  postgres_data:

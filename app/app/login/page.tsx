@@ -43,7 +43,7 @@ export default function Login() {
       e.preventDefault();
       setError('');
       setSuccess('');
-  
+
       try {
         const response = await fetch('http://localhost:8000/loginHandler', {
           method: 'POST',
@@ -52,13 +52,15 @@ export default function Login() {
           },
           body: JSON.stringify({ email, password }),
         });
-  
+
         const responseBody = await response.json();
-  
+
         if (response.ok) {
+          // Salva l'user_id nel localStorage
+          localStorage.setItem('userId', responseBody.user_id);
           setSuccess('Login successful! Redirecting...');
           setTimeout(() => {
-            router.push('/home'); // Reindirizza alla pagina protetta
+            router.push('/dashboard'); // Reindirizza alla pagina protetta
           }, 2000); // Attendi 2 secondi prima di reindirizzare
         } else {
           setError('Invalid password');
