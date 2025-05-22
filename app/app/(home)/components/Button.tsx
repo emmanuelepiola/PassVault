@@ -20,7 +20,7 @@ export default function Button({ label, icon }: Props) {
 
   function handleClick() {
     setSelection(label);
-    window.dispatchEvent(new Event("swipe-to-content"));
+    window.dispatchEvent(new Event("hide-sidebar"));
   }
 
   let IconComponent = null;

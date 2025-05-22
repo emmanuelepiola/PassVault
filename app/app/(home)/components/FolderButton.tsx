@@ -27,7 +27,7 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
   function handleClick() {
     if (!isEditing) {
       setSelection(id);
-      window.dispatchEvent(new Event("swipe-to-content"));
+      window.dispatchEvent(new Event("hide-sidebar"));
     }
   }
 
