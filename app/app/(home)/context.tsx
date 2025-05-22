@@ -245,6 +245,7 @@ const postItem = async (item: Item) => {
 
   const updateFolder = (value: Folder) => {
     // put request per aggiornare una folder
+    // get per aggiornare i dati in nel frontend
     // comportamento simulato
     setFolders(folders.map(folder => folder.id === value.id ? value : folder));
   }

@@ -12,6 +12,7 @@ export default function Button({ label, icon }: Props) {
 
     function handleClick(){
         setSelection(label);
+        window.dispatchEvent(new Event("hide-sidebar"));
     }
 
     return (

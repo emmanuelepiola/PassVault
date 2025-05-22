@@ -15,7 +15,7 @@ type Props = {
 
 export default function Section({ label, buttons }: Props) {
   return (
-    <div className="w-full text-l pt-[1rem]">
+    <div className="w-full text-l pt-[1rem] md:pt-0">
       <Label label={label} />
       {buttons.map((btn,i) => (
         <Button
