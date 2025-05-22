@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 rel="stylesheet"
                 />
             </head>
-            <body className="w-screen h-screen">
+            <body className="w-[100dvw] h-[100dvh] overflow-hidden">
              {children}
             </body>
         </html>

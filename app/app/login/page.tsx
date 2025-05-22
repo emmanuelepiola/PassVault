@@ -58,7 +58,7 @@ export default function Login() {
         if (response.ok) {
           setSuccess('Login successful! Redirecting...');
           setTimeout(() => {
-            router.push('/home'); // Reindirizza alla pagina protetta
+            router.push('/dashboard'); // Reindirizza alla pagina protetta
           }, 2000); // Attendi 2 secondi prima di reindirizzare
         } else {
           setError('Invalid password');

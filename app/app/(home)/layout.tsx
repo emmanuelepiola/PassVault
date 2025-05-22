@@ -3,7 +3,7 @@
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
 import { SelectionProvider } from './context';
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [activeView, setActiveView] = useState<"sidebar" | "content">("content");
@@ -47,8 +47,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     mouseStartX.current = null;
   };
 
+  // Custom event listener
+  useEffect(() => {
+    const handleSwipeToContent = () => {
+      setActiveView("content");
+    };
+
+    window.addEventListener("swipe-to-content", handleSwipeToContent);
+
+    return () => {
+      window.removeEventListener("swipe-to-content", handleSwipeToContent);
+    };
+  }, []);
+
   return (
-      <div
+    <html>
+      <head>
+          <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          rel="stylesheet"
+          />
+      </head>
+      <body
         className="h-[100dvh] w-[100dvw] overflow-hidden bg-white"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -87,6 +107,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </SelectionProvider>
-      </div>
+      </body>
+    </html>
   );
 }

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react';
-import { useSelection , Folder} from '../context';
+import { useSelection , Folder } from '../context';
 import ShareModal from './ShareModal';
+import { Folder as FolderIcon, FolderSync } from 'lucide-react';
 
 type Props = {
   id: string;
@@ -26,6 +27,7 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
   function handleClick() {
     if (!isEditing) {
       setSelection(id);
+      window.dispatchEvent(new Event("swipe-to-content"));
     }
   }
 
@@ -54,14 +56,17 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
     console.log('delete folder', id);
     deleteFolder(id);
   }
-// ============================ SHARE ============================ //
+
+  // ============================ SHARE ============================ //
   function handleShare(e: React.MouseEvent) {
     e.stopPropagation();
     setIsModalOpen(true);
   }
+
   function setShared(bool: boolean){
     shared = bool;
   }
+
   function setSharedWith(sharedWithMod: string[]){
     if (sharedWithMod !== sharedWith){
       const folder: Folder = {account: account, id: id, label: label, shared: shared, editable: editable, sharedWith: sharedWithMod}
@@ -69,14 +74,22 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
     }
   }
   // ============================ FINE SHARE ============================ //
+
+  let IconComponent = null;
+  if (icon === 'folder') {
+    IconComponent = <FolderIcon className="md:h-5 md:w-5 h-7 w-7" />;
+  } else if (icon === 'folder_shared') {
+    IconComponent = <FolderSync className="md:h-5 md:w-5 h-7 w-7" />;
+  }
+
   return (
     <div
       onClick={handleClick}
       onDoubleClick={() => setIsEditing(true)}
-      className={`relative w-full flex items-center px-6 py-2 cursor-pointer transition-colors duration-200 
+      className={`relative w-full flex items-center md:px-6 px-8 py-2 md:text-base text-2xl cursor-pointer transition-colors duration-200 
         ${isSelected ? 'bg-blue-200 text-white' : 'hover:bg-gray-100 text-gray-800'}`}
     >
-      <span className="material-symbols-outlined text-lg flex-shrink-0">{icon}</span>
+      {IconComponent}
       <div className="pl-2 w-full pr-10 relative">
         {isEditing ? (
           <input
@@ -129,5 +142,7 @@ export default function FolderButton({ id, label, icon, onLabelChange, editable,
   );
 }
 
+
+  
 
   

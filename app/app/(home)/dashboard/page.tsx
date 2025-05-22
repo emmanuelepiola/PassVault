@@ -5,24 +5,28 @@ import Label from "./components/Label";
 import ItemBox from "./components/ItemBox";
 import FieldsLabels from "./components/FieldsLabels";
 import PasswordGeneratorBox from "./components/PasswordGeneratorBox";
+import SettingsBox from "./components/SettingsBox";
 
 export default function Dashboard() {
   const { selection } = useSelection();
 
-  const title = selection === "Password Generator" ? "Password" : "Dashboard";
-
   return (
     <div className="h-full w-full flex flex-col">
-      <Label label={title} />
-      {selection === "Password Generator" ? (
-          <></>
-      ) : (
-        <FieldsLabels />
+      <div className="border-b border-gray-200 md:border-0">
+        <Label label={["Password Generator", "All Items", "Settings", "Password Health"].includes(selection) ? selection : "Folders"} />
+      </div>
+
+      {selection !== "Password Generator" && selection !== "Settings" && (
+        <div className="hidden md:block">
+          <FieldsLabels />
+        </div>
       )}
 
       <div className="flex-1 overflow-y-auto px-0 md:px-6">
         {selection === "Password Generator" ? (
           <PasswordGeneratorBox />
+        ) : selection === "Settings" ? (
+          <SettingsBox />
         ) : (
           <ItemBox />
         )}
@@ -30,4 +34,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
 

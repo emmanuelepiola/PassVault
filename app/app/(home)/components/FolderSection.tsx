@@ -51,7 +51,7 @@ export default function FolderSection({ label }: Props) {
   );
 
   return (
-    <div className="w-full text-l pt-[1rem]">
+    <div className="w-full text-l md:pt-[1rem]">
       <SideBarFolderLabel label={label} addFolder={addFolder} />
       {filteredFolders.map((folder, i) => (
         <FolderButton

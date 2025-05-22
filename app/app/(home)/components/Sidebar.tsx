@@ -13,7 +13,7 @@ export default function Sidebar() {
 
   return (
     <div className="bg-blue-100 backdrop-blur-sm h-[100vh] w-full md:w-[25rem] flex flex-col shadow-xl border-r border-blue-200/50">
-      <div className="flex-none p-4 border-b border-blue-200/50">
+      <div className="hidden md:block flex-none p-4 border-b border-blue-200/50">
         <SearchBar />
       </div>
       <div className="flex-1 overflow-y-auto">
