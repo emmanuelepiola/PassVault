@@ -37,8 +37,10 @@ export default function ShareModal({
 
   // ============================ SHARE TOGGLE ============================ //
   function handleShareToggle() {
-    if (shared && folderAccount !== account) {
+    if (shared && folderAccount === account) {
+      console.log("shared", shared);
       setShared(false);
+      console.log("shared", shared);
       setSharedWith(localSharedWith.filter((u) => u.trim() !== ''));
     } else {
       setShared(true);
