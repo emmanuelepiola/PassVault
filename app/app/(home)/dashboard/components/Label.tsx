@@ -66,7 +66,7 @@ export default function Label({ label }: Props) {
 
   return (
     <div className="mr-[2rem] ml-4 md:ml-[2rem] md:pt-[1.8rem] md:pb-[2rem] relative">
-      {!isSystemLabel && <AddButton />}
+      {label !== "Password Generator" && label !== "Settings" && <AddButton />}
 
       <div className="block md:hidden">
         <SearchBar />
