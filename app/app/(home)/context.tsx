@@ -19,7 +19,8 @@ type Item = {
   username: string;
   password: string;
   securityLevel: "low" | "medium" | "high" | "unknown"; 
-  folderID: string;
+  folderID: string,
+  sharedFolder: boolean;
 };
 
 type SelectionContextType = {
@@ -50,9 +51,9 @@ type SelectionContextType = {
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
 
 export const SelectionProvider = ({ children }: { children: React.ReactNode }) => {
-  const [account, setAccount] = useState<string>("user@gmail.com");
+  const [account, setAccount] = useState<string>("");
   const [selection, setSelection] = useState("All Items");
-  const [ID, setID] = useState("5");
+  const [ID, setID] = useState("0");
   const [folders, setFolders] = useState<Folder[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -67,6 +68,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
     getAccount();
     console.log(account);
   }, []);
+
 
   const getAccount = async () => {
   const userId = localStorage.getItem('userId');
@@ -136,8 +138,10 @@ const getItems = async () => {
     return;
   }
 
+  const folderParam = ID && ID !== '0' ? `&folder_id=${ID}` : '';
+
   try {
-    const response = await fetch(`http://localhost:8000/api/items?user_id=${userId}`, {
+    const response = await fetch(`http://localhost:8000/api/items?user_id=${userId}${folderParam}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include', // Se necessario per autenticazione
@@ -154,8 +158,9 @@ const getItems = async () => {
       username: item.username,
       password: item.password,
       securityLevel: item.securityLevel || 'unknown', // Usa direttamente il valore restituito dal backend
-      folderID: item.folder_id || '0', // Se `folder_id` è nullo, assegna '0'
+      folderID: item.folderId || '0', // Se `folder_id` è nullo, assegna '0'
       account: item.user_id, // Supponendo che il backend restituisca `user_id`
+      sharedFolder: item.shared || false, // Mappa il campo `sharedFolder` dal backend
   }))
 );
     } else {
@@ -224,7 +229,7 @@ const postItem = async (item: Item) => {
         username: item.username,
         password: item.password, // Invia la password in chiaro
         website: item.website,
-        folder_id: item.folderID && item.folderID !== '0' ? item.folderID : null,
+        folder_id: item.folderID
       }),
     });
 
@@ -243,12 +248,12 @@ const postItem = async (item: Item) => {
 
 };
 
-  const updateFolder = (value: Folder) => {
-    // put request per aggiornare una folder
-    // get per aggiornare i dati in nel frontend
-    // comportamento simulato
-    setFolders(folders.map(folder => folder.id === value.id ? value : folder));
-  }
+const updateFolder = (value: Folder) => {
+  // put request per aggiornare una folder
+  // get per aggiornare i dati in nel frontend
+  // comportamento simulato
+  setFolders(folders.map(folder => folder.id === value.id ? value : folder));
+}
 
 const updateItem = async (item: Item) => {
   try {
@@ -275,6 +280,7 @@ const updateItem = async (item: Item) => {
             : prevItem
         )
       );
+      getItems()
     } else {
       console.error('Errore durante l\'aggiornamento dell\'elemento:', data.error);
     }
@@ -289,9 +295,26 @@ const updateItem = async (item: Item) => {
     setFolders(folders.filter(folder => folder.id !== id));
   }
 
-  const deleteItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
-  };
+const deleteItem = async (id: string) => {
+  try {
+    const response = await fetch(`http://localhost:8000/deleteItem/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.ok) {
+      console.log('Elemento eliminato con successo');
+      
+      // Aggiorna lo stato locale rimuovendo l'elemento eliminato
+      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    } else {
+      const data = await response.json();
+      console.error('Errore durante l\'eliminazione dell\'elemento:', data.error);
+    }
+  } catch (error) {
+    console.error('Errore durante l\'eliminazione dell\'elemento:', error);
+  }
+};
 
 const shareFolder = async (id: string) => {
   const folder = folders.find(folder => folder.id === id);

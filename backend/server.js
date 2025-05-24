@@ -273,6 +273,88 @@ app.post('/addItem', async (req, res) => {
   }
 });
 
+app.put('/updateItem/:id', async (req, res) => {
+  const { id } = req.params;
+  const { tag, username, password, website, folder_id } = req.body;
+
+  if (!tag && !username && !password && !website && folder_id === undefined) {
+    return res.status(400).json({ error: 'At least one field is required to update!' });
+  }
+
+  try {
+    // Costruisci dinamicamente la query in base ai campi forniti
+    const updates = [];
+    const values = [];
+    let index = 1;
+    let securityLevel = null; // Variabile per il livello di sicurezza
+
+    if (tag) {
+      updates.push(`tag = $${index}`);
+      values.push(tag);
+      index++;
+    }
+
+    if (username) {
+      updates.push(`username = $${index}`);
+      values.push(username);
+      index++;
+    }
+
+    if (password) {
+      // Crittografa la password prima di salvarla
+      const encryptedPassword = encrypt(password);
+      updates.push(`password = $${index}`);
+      values.push(encryptedPassword);
+      index++;
+
+      // Ricalcola il livello di sicurezza della nuova password
+      securityLevel = await getPasswordHealth(password);
+      updates.push(`security = $${index}`);
+      values.push(securityLevel);
+      index++;
+    }
+
+    if (website) {
+      updates.push(`website = $${index}`);
+      values.push(website);
+      index++;
+    }
+
+    if (folder_id !== undefined) {
+      updates.push(`folder_id = $${index}`);
+      values.push(folder_id);
+      index++;
+    }
+
+    values.push(id); // Aggiungi l'ID come ultimo parametro
+    const query = `UPDATE password SET ${updates.join(', ')} WHERE id = $${index}`;
+
+    await pool.query(query, values);
+
+    res.status(200).json({ message: 'Item updated successfully', securityLevel });
+  } catch (err) {
+    console.error('Errore durante l\'aggiornamento dell\'item:', err);
+    res.status(500).json({ error: 'Errore durante l\'aggiornamento dell\'item' });
+  }
+});
+
+app.delete('/deleteItem/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query('DELETE FROM password WHERE id = $1', [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Elemento non trovato' });
+    }
+
+    res.status(200).json({ message: 'Elemento eliminato con successo' });
+  } catch (err) {
+    console.error('Errore durante l\'eliminazione dell\'elemento:', err);
+    res.status(500).json({ error: 'Errore durante l\'eliminazione dell\'elemento' });
+  }
+});
+
 //==================== ENDPOINT FOLDERS ==========================
 
 app.post('/addFolder', async (req, res) => {
@@ -343,13 +425,14 @@ app.put('/updateFolder/:id', async (req, res) => {
 
 app.get('/api/items', async (req, res) => {
   const userId = req.query.user_id;
+  const folderId = req.query.folder_id;
 
   if (!userId) {
     return res.status(400).json({ error: 'User ID is required!' });
   }
 
   try {
-    const query = `
+    let queryText = `
       SELECT 
         p.id, 
         p.tag, 
@@ -363,7 +446,15 @@ app.get('/api/items', async (req, res) => {
       LEFT JOIN folders f ON p.folder_id = f.id
       WHERE p.user_id = $1
     `;
-    const result = await pool.query(query, [userId]);
+    const queryParams = [userId];
+    if (folderId && folderId !== '0') {
+      queryText += ' AND p.folder_id = $2';
+      queryParams.push(folderId);
+    }
+    queryText += ' ORDER BY p.id ASC';
+    const result = await pool.query(queryText, queryParams);
+
+    console.log("Items dal database:", result.rows);
 
     const items = await Promise.all(
       result.rows.map(async (row) => {
@@ -380,12 +471,14 @@ app.get('/api/items', async (req, res) => {
           username: row.username,
           password: decryptedPassword,
           website: row.website,
-          folderID: row.folder_id || '0',
+          folderId: row.folder_id !== null ? row.folder_id : 0, // Sostituisci solo se è null,
           folderName: row.folder_name || 'No Folder',
           securityLevel,
+          sharedFolder: row.folder_shared === 1, // Converti il valore numerico in booleano
         };
       })
     );
+    console.log("Oggetti trasformati per il client:", items);
 
     res.status(200).json({ items });
   } catch (err) {
