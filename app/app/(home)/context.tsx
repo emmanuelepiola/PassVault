@@ -36,12 +36,10 @@ type SelectionContextType = {
   getItems: () => void;
   postFolder: (folderName: string) => void;
   postItem: (value: Item) => void;
-  updateFolder: (value: Folder) => void;
+  updateFolder: (id: string, updates: Partial<Folder>) => Promise<void>;
   updateItem: (value: Item) => void;
   deleteFolder: (id: string) => void;
   deleteItem: (id: string) => void;
-  shareFolder: (id: string) => void;
-  unshareFolder: (id: string) => void;
   searchTerm: string;
   setSearchTerm: (value: string) => void;
   account: string;
@@ -56,8 +54,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
   const [ID, setID] = useState("0");
   const [folders, setFolders] = useState<Folder[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-
-  const [items, setItems] = useState<Item[]>([]); // get simulated items
+  const [items, setItems] = useState<Item[]>([]);
 
   //=========== Funzioni per le richieste HTTP ============//
 
@@ -248,12 +245,32 @@ const postItem = async (item: Item) => {
 
 };
 
-const updateFolder = (value: Folder) => {
-  // put request per aggiornare una folder
-  // get per aggiornare i dati in nel frontend
-  // comportamento simulato
-  setFolders(folders.map(folder => folder.id === value.id ? value : folder));
-}
+const updateFolder = async (id: string, updates: Partial<Folder>) => {
+  const folder = folders.find(folder => folder.id === id);
+  if (!folder) return;
+
+  try {
+    const response = await fetch(`http://localhost:8000/updateFolder/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      mode: 'cors',
+      credentials: 'include',
+      body: JSON.stringify(updates), // Passa solo i campi da aggiornare
+    });
+
+    if (response.ok) {
+      console.log('Cartella aggiornata con successo');
+
+      // Aggiorna lo stato locale
+      const updatedFolder = { ...folder, ...updates };
+      setFolders(folders.map(f => (f.id === id ? updatedFolder : f)));
+    } else {
+      console.error('Errore durante l\'aggiornamento della cartella');
+    }
+  } catch (error) {
+    console.error('Errore durante l\'aggiornamento della cartella:', error);
+  }
+};
 
 const updateItem = async (item: Item) => {
   try {
@@ -315,70 +332,12 @@ const deleteItem = async (id: string) => {
     console.error('Errore durante l\'eliminazione dell\'elemento:', error);
   }
 };
-
-const shareFolder = async (id: string) => {
-  const folder = folders.find(folder => folder.id === id);
-  if (!folder) return;
-
-  try {
-    const response = await fetch(`http://localhost:8000/updateFolder/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      mode: 'cors',
-      credentials: 'include',
-      body: JSON.stringify({
-        shared: true, // Imposta il flag shared su true
-      }),
-    });
-
-    if (response.ok) {
-      console.log('Cartella condivisa con successo');
-
-      // Aggiorna lo stato locale
-      const updatedFolder = { ...folder, shared: true };
-      updateFolder(updatedFolder);
-    } else {
-      console.error('Errore durante la condivisione della cartella');
-    }
-  } catch (error) {
-    console.error('Errore durante la condivisione della cartella:', error);
-  }
-};
-
-const unshareFolder = async (id: string) => {
-  const folder = folders.find(folder => folder.id === id);
-  if (!folder) return;
-
-  try {
-    const response = await fetch(`http://localhost:8000/updateFolder/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      mode: 'cors',
-      credentials: 'include',
-      body: JSON.stringify({
-        shared: false, // Imposta il flag shared su false
-      }),
-    });
-
-    if (response.ok) {
-      console.log('Cartella non condivisa con successo');
-
-      // Aggiorna lo stato locale
-      const updatedFolder = { ...folder, shared: false };
-      updateFolder(updatedFolder);
-    } else {
-      console.error('Errore durante la rimozione della condivisione della cartella');
-    }
-  } catch (error) {
-    console.error('Errore durante la rimozione della condivisione della cartella:', error);
-  }
-};
   
   //=========== Fine funzioni per le richieste HTTP ============//
 
   return (
     <SelectionContext.Provider
-      value={{selection,account,setAccount,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,shareFolder,unshareFolder,searchTerm,setSearchTerm}}
+      value={{selection,account,setAccount,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm}}
     >
       {children}
     </SelectionContext.Provider>

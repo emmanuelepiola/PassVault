@@ -13,7 +13,7 @@ const securityOrder = {
 };
 
 export default function ItemBox() {
-  const { selection, ID, setID, getItems, items, searchTerm } = useSelection();
+  const { selection, ID, setID, getItems, items, folders, searchTerm } = useSelection();
 
   const matchesSearch = (item: any) =>
     item.tag.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -28,18 +28,26 @@ export default function ItemBox() {
       setID(selection); // Imposta ID uguale a selection quando è un ID di cartella
     }
     }, [selection]);
-  
-  // Filtra i dati in base a selection e ID
-  const filteredBySelection =
-    selection === "All Items"
-      ? items
-      : selection === "Password Health"
-      ? [...items].sort((a, b) => securityOrder[a.securityLevel] - securityOrder[b.securityLevel])
-      : selection === "Folder"
-      ? items.filter(item => String(item.folderID) === String(ID)) // Filtra per ID della cartella
-      : selection === "Shared Folder"
-      ? items.filter(item => item.sharedFolder === true) // Filtra per cartelle condivise
-      : [];
+    
+    // Filtra gli elementi in base alla selezione
+    let filteredBySelection = [];
+    if (selection === "All Items") {
+      filteredBySelection = items;
+    } else if (selection === "Password Health") {
+      filteredBySelection = [...items].sort(
+        (a, b) => securityOrder[a.securityLevel] - securityOrder[b.securityLevel]
+      );
+    } else {
+      // Controlla se la selezione è una cartella condivisa o normale
+      const selectedFolder = folders.find(folder => folder.id === selection);
+      if (selectedFolder?.shared) {
+        // Filtra gli elementi per cartelle condivise
+        filteredBySelection = items.filter(item => item.folderID === selection && selectedFolder.shared);
+      } else {
+        // Filtra gli elementi per cartelle normali
+        filteredBySelection = items.filter(item => item.folderID === selection && !selectedFolder?.shared);
+      }
+    }
   
   const filteredItems = filteredBySelection.filter(matchesSearch);
     console.log("Filtered Items:", filteredItems); // Log degli elementi filtrati
