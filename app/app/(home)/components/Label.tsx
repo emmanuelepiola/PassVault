@@ -12,7 +12,7 @@ export default function Label({ label }: Props) {
   };
 
   return (
-    <div className="w-full border-0 h-[3rem] flex items-center py-[2rem] py-0 pl-[1rem] pr-[1rem] relative">
+    <div className="w-full border-0 h-[3rem] flex items-center py-[1rem] pl-[1rem] pr-[1rem] relative">
       <label className="w-full px-0 border-b-1 text-xl border-gray-500">
         {label}
       </label>

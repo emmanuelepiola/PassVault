@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import DisplayModal from './DisplayModal';
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal'; // ✅ Aggiunto import per il modal di conferma
 import { useSelection } from "../../context";
 
 type SecurityLevel = 'low' | 'medium' | 'high';
@@ -26,6 +27,7 @@ export default function PasswordItem({
   password,
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // ✅ Stato per mostrare il modal di conferma
   const { deleteItem } = useSelection();
 
   const getSecurityColors = () => {
@@ -41,13 +43,23 @@ export default function PasswordItem({
     }
   };
 
+  // ✅ Modificato per aprire il modal di conferma
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteItem(id);
-    console.log('Delete clicked!');
+    setShowDeleteConfirm(true);
   };
 
-  // Funzione per troncare l'URL e ottenere solo il dominio
+  // ✅ Funzione chiamata se l’utente conferma l’eliminazione
+  const confirmDelete = () => {
+    deleteItem(id);
+    setShowDeleteConfirm(false);
+  };
+
+  // ✅ Funzione chiamata se l’utente annulla
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+  };
+
   const getDisplayDomain = (url: string) => {
     try {
       const { hostname } = new URL(url.startsWith('http') ? url : `http://${url}`);
@@ -66,16 +78,18 @@ export default function PasswordItem({
         <div className="flex items-center justify-between w-full">
           <label className="text-gray-900 font-medium w-1/4">{tag}</label>
 
-          <a
-            href={website.startsWith('http') ? website : `http://${website}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="hidden md:block text-gray-600 hover:underline w-1/4 truncate"
-          >
-            {getDisplayDomain(website)}
-          </a>
-
+          <div className="hidden md:flex w-1/4">
+            <a
+              href={website.startsWith('http') ? website : `http://${website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-gray-600 hover:underline truncate"
+              style={{ maxWidth: '100%' }}
+            >
+              {getDisplayDomain(website)}
+            </a>
+          </div>
 
           <div className="flex items-center gap-1 w-1/4">
             {getSecurityColors()
@@ -86,7 +100,7 @@ export default function PasswordItem({
           </div>
 
           <span
-            className="material-symbols-outlined cursor-pointer text-gray-500 hover:text-red-500 ml-6"
+            className="material-symbols-outlined cursor-pointer text-gray-500 hover:text-red-500"
             onClick={handleDeleteClick}
           >
             delete
@@ -104,7 +118,15 @@ export default function PasswordItem({
         password={password}
         securityLevel={securityLevel}
       />
+
+      {/* ✅ Modal di conferma eliminazione */}
+      {showDeleteConfirm && (
+        <DeleteConfirmationModal
+          folderName={tag}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
     </>
   );
 }
-
