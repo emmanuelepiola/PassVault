@@ -60,15 +60,15 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
 
   // ===== GET automatico al mount =====
   useEffect(() => {
+    getAccount();
     getFolders();
     getItems();
-    getAccount();
     console.log(account);
   }, []);
 
 
   const getAccount = async () => {
-  const userId = localStorage.getItem('userId');
+  const userId = sessionStorage.getItem('userId');
   if (!userId) {
     console.error('Utente non loggato!');
     return;
@@ -94,7 +94,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
 };
 
 const getFolders = async () => {
-  const userId = localStorage.getItem('userId');
+  const userId = sessionStorage.getItem('userId');
   if (!userId) {
     console.error('Utente non loggato!');
     return;
@@ -109,17 +109,19 @@ const getFolders = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Cartelle recuperate:', data);
-      setFolders(
-        data.folders.map((folder: any) => ({
-          id: folder.id,
-          label: folder.name,
-          account: folder.created_by, // Supponendo che il backend restituisca `created_by`
-          shared: folder.shared === 1, // Converti il valore numerico in booleano
-          editable: folder.created_by === userId, // L'utente può modificare solo le proprie cartelle
-          sharedWith: folder.shared_with || [], // Supponendo che il backend restituisca un array `shared_with`
-        }))
-      );
+      console.log('Cartelle recuperate dal backend:', data.folders);
+
+      const mappedFolders = data.folders.map((folder: any) => ({
+        id: folder.id,
+        label: folder.name,
+        account: folder.created_by,
+        shared: folder.shared, // Forza il valore come booleano
+        editable: folder.created_by === userId,
+        sharedWith: folder.shared_with || [],
+      }));
+
+      setFolders(mappedFolders); //Setting delle cartelle in locale
+
     } else {
       console.error('Errore nel recupero delle cartelle:', response.statusText);
     }
@@ -129,7 +131,7 @@ const getFolders = async () => {
 };
 
 const getItems = async () => {
-  const userId = localStorage.getItem('userId');
+  const userId = sessionStorage.getItem('userId');
   if (!userId) {
     console.error('Utente non loggato!');
     return;
@@ -170,7 +172,7 @@ const getItems = async () => {
 };
   
 const postFolder = async (folderName: string, isShared: boolean = false) => {
-  const userId = localStorage.getItem('userId');
+  const userId = sessionStorage.getItem('userId');
   if (!userId) {
     console.error('Utente non loggato!');
     return;
@@ -211,7 +213,7 @@ const postFolder = async (folderName: string, isShared: boolean = false) => {
 };
 
 const postItem = async (item: Item) => {
-  const userId = localStorage.getItem('userId');
+  const userId = sessionStorage.getItem('userId');
   if (!userId) {
     console.error('Utente non loggato!');
     return;

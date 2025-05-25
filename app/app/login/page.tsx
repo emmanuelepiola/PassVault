@@ -58,7 +58,7 @@ export default function Login() {
       const responseBody = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('userId', responseBody.user_id);
+        sessionStorage.setItem('userId', responseBody.user_id);
         setSuccess('Login successful! Redirecting...');
         setTimeout(() => {
           router.push('/dashboard');

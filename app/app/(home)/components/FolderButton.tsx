@@ -28,8 +28,6 @@ export default function FolderButton({
     deleteFolder,
     updateFolder,
     account,
-    shareFolder,
-    unshareFolder
   } = useSelection();
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -61,7 +59,7 @@ export default function FolderButton({
   }
 
   function toggleShared(state: boolean) {
-    state ? shareFolder(id) : unshareFolder(id);
+    updateFolder(id, { shared: state }); // Usa updateFolder per aggiornare lo stato
   }
 
   function handleShowSharedWith(e: React.MouseEvent) {
@@ -71,15 +69,7 @@ export default function FolderButton({
 
   function setSharedWith(updated: string[]) {
     if (updated !== sharedWith) {
-      const folder: Folder = {
-        account,
-        id,
-        label,
-        shared,
-        editable: false,
-        sharedWith: updated
-      };
-      updateFolder(folder);
+      updateFolder(id, { sharedWith: updated }); // Passa solo i campi da aggiornare
     }
   }
 

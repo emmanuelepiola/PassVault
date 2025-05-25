@@ -20,7 +20,7 @@ type Props = {
 };
 
 export default function FolderSection({ label }: Props) {
-  const { folders, setFolders, ID, setID, updateFolder, postFolder, account, shareFolder } = useSelection();
+  const { folders, ID, updateFolder, postFolder, account } = useSelection();
 
 const handleAddFolder = async (folderName: string) => {
   // Determina se la cartella deve essere condivisa
@@ -29,35 +29,12 @@ const handleAddFolder = async (folderName: string) => {
   // Crea la cartella con il flag shared corretto
   await postFolder(folderName, isShared);
 };
+  const filteredFolders = folders.filter(folder => {
+    const isShared = !!folder.shared; // Forza il valore booleano
+    console.log(`Cartella: ${folder.label}, shared: ${isShared}`);
+    return label === "Shared" ? isShared : !isShared;
+  });
 
-  const updateFolderLabel = async (id: string, newLabel: string) => {
-    try {
-      const response = await fetch(`http://localhost:8000/updateFolder/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newLabel,
-        }),
-      });
-
-      if (response.ok) {
-        console.log('Nome della cartella aggiornato con successo');
-        setFolders((prevFolders) =>
-          prevFolders.map((folder) =>
-            folder.id === id ? { ...folder, label: newLabel } : folder
-          )
-        );
-      } else {
-        console.error('Errore durante l\'aggiornamento del nome della cartella');
-      }
-    } catch (error) {
-      console.error('Errore durante l\'aggiornamento del nome della cartella:', error);
-    }
-  };
-
-  const filteredFolders = folders.filter(folder =>
-    label === "Shared" ? folder.shared : !folder.shared
-  );
 
   return (
     <div className="w-full text-l pt-[1rem]">
@@ -72,7 +49,7 @@ const handleAddFolder = async (folderName: string) => {
           shared={folder.shared}
           sharedWith={folder.sharedWith}
           editable={folder.editable}
-          onLabelChange={(newLabel) => updateFolderLabel(folder.id, newLabel)}
+          onLabelChange={(newLabel) => updateFolder(folder.id, { label: newLabel })} // Usa updateFolder
           folderAccount={folder.account}
         />
       ))}

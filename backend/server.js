@@ -454,8 +454,6 @@ app.get('/api/items', async (req, res) => {
     queryText += ' ORDER BY p.id ASC';
     const result = await pool.query(queryText, queryParams);
 
-    console.log("Items dal database:", result.rows);
-
     const items = await Promise.all(
       result.rows.map(async (row) => {
         const decryptedPassword = decrypt(row.password);
@@ -478,7 +476,6 @@ app.get('/api/items', async (req, res) => {
         };
       })
     );
-    console.log("Oggetti trasformati per il client:", items);
 
     res.status(200).json({ items });
   } catch (err) {
