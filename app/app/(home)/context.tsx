@@ -11,7 +11,7 @@ export type Folder = {
   sharedWith: string[];
 };
 
-type Item = {
+export type Item = {
   account: string;
   id: string;
   tag: string;
@@ -34,7 +34,7 @@ type SelectionContextType = {
   setItems: (value: Item[]) => void;
   getFolders: () => void;
   getItems: () => void;
-  postFolder: (folderName: string) => void;
+  postFolder: (folderName: string, isShared: boolean) => void;
   postItem: (value: Item) => void;
   updateFolder: (id: string, updates: Partial<Folder>) => Promise<void>;
   updateItem: (value: Item) => void;
@@ -135,10 +135,9 @@ const getItems = async () => {
     return;
   }
 
-  const folderParam = ID && ID !== '0' ? `&folder_id=${ID}` : '';
-
   try {
-    const response = await fetch(`http://localhost:8000/api/items?user_id=${userId}${folderParam}`, {
+    // Rimuovi il parametro folder_id dalla query string
+    const response = await fetch(`http://localhost:8000/api/items?user_id=${userId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include', // Se necessario per autenticazione
@@ -146,20 +145,22 @@ const getItems = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Elementi recuperati:', data);
+      console.log('Elementi recuperati (tutti):', data);
+
+      // Mappa i dati recuperati e aggiorna lo stato
       setItems(
-      data.items.map((item: any) => ({
-      id: item.id,
-      tag: item.tag,
-      website: item.website,
-      username: item.username,
-      password: item.password,
-      securityLevel: item.securityLevel || 'unknown', // Usa direttamente il valore restituito dal backend
-      folderID: item.folderId || '0', // Se `folder_id` è nullo, assegna '0'
-      account: item.user_id, // Supponendo che il backend restituisca `user_id`
-      sharedFolder: item.shared || false, // Mappa il campo `sharedFolder` dal backend
-  }))
-);
+        data.items.map((item: any) => ({
+          id: item.id,
+          tag: item.tag,
+          website: item.website,
+          username: item.username,
+          password: item.password,
+          securityLevel: item.securityLevel || 'unknown', // Usa direttamente il valore restituito dal backend
+          folderID: item.folderId || '0', // Se `folder_id` è nullo, assegna '0'
+          account: item.user_id, // Supponendo che il backend restituisca `user_id`
+          sharedFolder: item.shared || false, // Mappa il campo `sharedFolder` dal backend
+        }))
+      );
     } else {
       console.error('Errore nel recupero degli elementi:', response.statusText);
     }

@@ -4,7 +4,7 @@ import Item from "./Item";
 import { useSelection } from "../../context";
 import { useEffect } from "react";
 
-type SecurityLevel = 'low' | 'medium' | 'high';
+type SecurityLevel = 'low' | 'medium' | 'high' | 'unknown';
 
 const securityOrder = {
   low: 1,
@@ -27,8 +27,8 @@ export default function ItemBox() {
     } else {
       setID(selection); // Imposta ID uguale a selection quando è un ID di cartella
     }
-    }, [selection]);
-    
+    }, [selection, items]);
+
     // Filtra gli elementi in base alla selezione
     let filteredBySelection = [];
     if (selection === "All Items") {
@@ -50,7 +50,6 @@ export default function ItemBox() {
     }
   
   const filteredItems = filteredBySelection.filter(matchesSearch);
-    console.log("Filtered Items:", filteredItems); // Log degli elementi filtrati
 
   return (
     <div className="px-0 md:px-0 flex flex-col gap-5">

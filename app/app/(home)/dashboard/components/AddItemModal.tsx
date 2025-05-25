@@ -67,7 +67,7 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
   console.log("handleSubmit chiamato");
   e.preventDefault();
-  const newID = (parseInt(ID) + 1).toString();
+  const newID = parseInt(ID).toString();
   setID(newID);
 
   const folderID = (selection === "All Items" || selection === "Password Health") ? "0" : selection;
@@ -80,11 +80,13 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
     username: username,
     password: password,
     folderID: folderID,
+    securityLevel: "unknown",
   };
 
   console.log("Nuovo elemento creato:", newItem); // Log per debug
 
   await postItem(newItem); // Invia l'elemento al backend
+
   closeModal();
 };
 
