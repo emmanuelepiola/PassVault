@@ -44,6 +44,7 @@ type SelectionContextType = {
   setSearchTerm: (value: string) => void;
   account: string;
   setAccount: (value: string) => void;
+  shareFolderWithUser: (email: string, folderId: string) => Promise<{ success: boolean; message: string }>;
 };
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
@@ -335,12 +336,35 @@ const deleteItem = async (id: string) => {
     console.error('Errore durante l\'eliminazione dell\'elemento:', error);
   }
 };
+
+const shareFolderWithUser = async (email: string, folderId: string) => {
+  try {
+    const response = await fetch('http://localhost:8000/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, folderId }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Cartella condivisa con successo:', data);
+      return { success: true, message: data.message };
+    } else {
+      const error = await response.json();
+      console.error('Errore durante la condivisione della cartella:', error.error);
+      return { success: false, message: error.error };
+    }
+  } catch (error) {
+    console.error('Errore durante la condivisione della cartella:', error);
+    return { success: false, message: 'Errore di rete' };
+  }
+};
   
   //=========== Fine funzioni per le richieste HTTP ============//
 
   return (
     <SelectionContext.Provider
-      value={{selection,account,setAccount,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm}}
+      value={{selection,account,setAccount,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm, shareFolderWithUser}}
     >
       {children}
     </SelectionContext.Provider>

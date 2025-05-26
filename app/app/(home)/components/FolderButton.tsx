@@ -68,9 +68,7 @@ export default function FolderButton({
   }
 
   function setSharedWith(updated: string[]) {
-    if (updated !== sharedWith) {
-      updateFolder(id, { sharedWith: updated }); // Passa solo i campi da aggiornare
-    }
+    //Eliminare
   }
 
   return (

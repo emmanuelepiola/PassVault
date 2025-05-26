@@ -556,6 +556,42 @@ app.get('/api/users/:user_id', async (req, res) => {
   }
 });
 
+// Endpoint per condividere una cartella con un utente
+app.post('/share', async (req, res) => {
+  const { email, folderId } = req.body;
+
+  if (!email || !folderId) {
+    return res.status(400).json({ error: 'Email and folder ID are required' });
+  }
+
+  try {
+    // Verifica se l'email esiste nel database
+    const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userId = userResult.rows[0].id;
+
+    // Verifica se la cartella è condivisa
+    const folderResult = await pool.query('SELECT shared FROM folders WHERE id = $1', [folderId]);
+    if (folderResult.rows.length === 0 || folderResult.rows[0].shared === 0) {
+      return res.status(400).json({ error: 'Folder is not shared or does not exist' });
+    }
+
+    // Aggiungi l'utente alla tabella folder_users
+    await pool.query(
+      'INSERT INTO folder_users (folder_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+      [folderId, userId]
+    );
+
+    res.status(200).json({ message: 'Folder shared successfully' });
+  } catch (err) {
+    console.error('Error sharing folder:', err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
+});
+
 //==================== FUNZIONE BOH ==========================
 
 // Funzione asincrona per valutare la sicurezza della password

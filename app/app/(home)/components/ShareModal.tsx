@@ -26,7 +26,7 @@ export default function ShareModal({
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [localSharedWith, setLocalSharedWith] = useState<string[]>([]);
-  const { account } = useSelection();
+  const { account, shareFolderWithUser } = useSelection();
   
   useEffect(() => {
     setMounted(true);
@@ -46,6 +46,7 @@ export default function ShareModal({
     }
     setIsModalOpen(false);
   }
+
   // ============================ HANDLE CHANGE ============================ //
   function handleInputChange(index: number, value: string) {
     const updated = [...localSharedWith];
@@ -56,6 +57,14 @@ export default function ShareModal({
   function handleBlur() {
     const cleaned = localSharedWith.filter((v) => v.trim() !== '');
     setSharedWith(cleaned);
+
+    // Invia tutte le email (anche non valide formalmente) al backend
+    cleaned.forEach(async (email) => {
+      const result = await shareFolderWithUser(email, folderAccount);
+      if (!result.success) {
+        alert(`Errore per ${email}: ${result.message}`);
+      }
+    });
   }
 
   // Assicura almeno 4 input, anche se sharedWith è più corto
@@ -85,7 +94,7 @@ export default function ShareModal({
           <input
             key={i}
             type="text"
-            placeholder="username"
+            placeholder="email"
             value={val}
             onChange={(e) => handleInputChange(i, e.target.value)}
             onBlur={handleBlur}
