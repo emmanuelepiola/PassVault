@@ -10,6 +10,7 @@ export type Folder = {
   shared: boolean;
   editable: boolean;
   sharedWith: string[];
+  ownerEmail: string;
 };
 
 export type Item = {
@@ -120,6 +121,7 @@ const getFolders = async () => {
         shared: folder.shared, // Forza il valore come booleano
         editable: folder.created_by === userId,
         sharedWith: folder.shared_with || [],
+        ownerEmail: folder.owner_email
       }));
 
       setFolders(mappedFolders); //Setting delle cartelle in locale
@@ -204,6 +206,7 @@ const postFolder = async (folderName: string, isShared: boolean = false) => {
           shared: isShared, // Imposta il flag shared
           editable: true,
           sharedWith: [],
+          ownerEmail: account,
         },
       ]);
     } else {
@@ -316,11 +319,26 @@ const updateItem = async (item: Item) => {
   }
 };
 
-  const deleteFolder = (id: string) => {
-    // delete request per eliminare una folder
-    // comportamento simulato
-    setFolders(folders.filter(folder => folder.id !== id));
+const deleteFolder = async (id: string) => {
+  try {
+    const response = await fetch(`http://localhost:8000/deleteFolder/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.ok) {
+      console.log('Cartella eliminata con successo');
+      setFolders((prevFolders) => prevFolders.filter(folder => folder.id !== id));
+      setItems((prevItems) => prevItems.filter(item => item.folderID !== id)); // <-- aggiorna anche gli item!
+      setSelection((prevSelection) => (prevSelection === id ? "All Items" : prevSelection)); // <-- aggiungi questa riga
+    } else {
+      const data = await response.json();
+      console.error('Errore durante l\'eliminazione della cartella:', data.error);
+    }
+  } catch (error) {
+    console.error('Errore durante l\'eliminazione della cartella:', error);
   }
+};
 
 const deleteItem = async (id: string) => {
   try {

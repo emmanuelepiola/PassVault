@@ -13,6 +13,7 @@ type Props = {
   shared: boolean;
   sharedWith: string[];
   folderAccount: string;
+  ownerEmail: string;
 };
 
 export default function FolderButton({
@@ -21,7 +22,7 @@ export default function FolderButton({
   icon,
   shared,
   sharedWith,
-  folderAccount
+  ownerEmail
 }: Props) {
   const {
     selection,
@@ -112,13 +113,15 @@ export default function FolderButton({
 
           {/* Icone share & people */}
           <div className="absolute right-[1.2rem] top-0 flex items-center">
-            <span
-              className="material-symbols-outlined text-sm text-gray-400 cursor-pointer hover:text-green-700"
-              onClick={handleShare}
-              title={shared ? 'Unshare folder' : 'Share folder'}
-            >
-              link
-            </span>
+            {ownerEmail === account && (
+              <span
+                className="material-symbols-outlined text-sm text-gray-400 cursor-pointer hover:text-green-700"
+                onClick={handleShare}
+                title={shared ? 'Unshare folder' : 'Share folder'}
+              >
+                link
+              </span>
+            )}
 
             {shared && (
               <span
@@ -140,6 +143,7 @@ export default function FolderButton({
               label={label}
               shared={shared}
               folderAccount={id}
+              ownerEmail={ownerEmail}
             />
           </div>
         </div>

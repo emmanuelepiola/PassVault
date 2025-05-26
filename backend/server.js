@@ -421,6 +421,22 @@ app.put('/updateFolder/:id', async (req, res) => {
   }
 });
 
+app.delete('/deleteFolder/:id', async (req, res) => {
+  const folderId = req.params.id;
+  try {
+    // Elimina prima le associazioni con gli utenti (se usi una tabella folder_users)
+    await pool.query('DELETE FROM folder_users WHERE folder_id = $1', [folderId]);
+    // Elimina tutti gli item associati alla cartella (se vuoi)
+    await pool.query('DELETE FROM password WHERE folder_id = $1', [folderId]);
+    // Elimina la cartella
+    await pool.query('DELETE FROM folders WHERE id = $1', [folderId]);
+    res.status(200).json({ message: 'Cartella eliminata con successo' });
+  } catch (err) {
+    console.error('Errore durante l\'eliminazione della cartella:', err);
+    res.status(500).json({ error: 'Errore durante l\'eliminazione della cartella' });
+  }
+});
+
 //==================== ENDPOINT GET ==========================
 
 app.get('/api/items', async (req, res) => {

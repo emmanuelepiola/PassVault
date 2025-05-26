@@ -23,7 +23,8 @@ export default function ShareModal({
   setShared,
   setSharedWith,
   sharedWith,
-  folderAccount
+  folderAccount,
+  ownerEmail
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [localSharedWith, setLocalSharedWith] = useState<string[]>([]);
@@ -105,22 +106,24 @@ export default function ShareModal({
           />
         ))}
 
-        <div className="flex justify-end gap-4 mt-4">
-          <button
-            onClick={() => {
-              setIsModalOpen(false);
-            }}
-            className="bg-blue-100 hover:bg-blue-200 text-black font-semibold px-6 py-2 rounded-lg transition duration-300 ease-in-out"
-          >
-            Confirm
-          </button>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="bg-blue-100 hover:bg-blue-200 text-black font-semibold px-6 py-2 rounded-lg transition duration-300 ease-in-out"
-          >
-            Cancel
-          </button>
-        </div>
+        {ownerEmail === account && (
+          <div className="flex justify-end gap-4 mt-4">
+            <button
+              onClick={() => {
+                setIsModalOpen(false);
+              }}
+              className="bg-blue-100 hover:bg-blue-200 text-black font-semibold px-6 py-2 rounded-lg transition duration-300 ease-in-out"
+            >
+              Confirm
+            </button>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="bg-blue-100 hover:bg-blue-200 text-black font-semibold px-6 py-2 rounded-lg transition duration-300 ease-in-out"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
     </div>,
     document.body

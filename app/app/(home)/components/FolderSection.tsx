@@ -13,6 +13,7 @@ type Folder = {
   editable: boolean;
   shared: boolean;
   sharedWith: string[];
+  ownerEmail: string;
 };
 
 type Props = {
@@ -51,6 +52,7 @@ const handleAddFolder = async (folderName: string) => {
           editable={folder.editable}
           onLabelChange={(newLabel) => updateFolder(folder.id, { label: newLabel })} // Usa updateFolder
           folderAccount={folder.account}
+          ownerEmail={folder.ownerEmail}
         />
       ))}
     </div>
