@@ -12,6 +12,7 @@ type Props = {
   setSharedWith: (value: string[]) => void;
   sharedWith: string[]; // <-- aggiunto!
   folderAccount: string;
+  ownerEmail: string;
 };
 
 export default function ShareModal({
@@ -61,7 +62,7 @@ export default function ShareModal({
     setSharedWith(cleaned);
 
     cleaned.forEach(async (email) => {
-      const result = await shareFolderWithUser(email, folderAccount);
+      const result = await shareFolderWithUser(email, String(folderAccount));
       if (!result.success) {
         alert(`Errore per ${email}: ${result.message}`);
       }

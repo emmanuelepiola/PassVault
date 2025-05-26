@@ -139,7 +139,7 @@ export default function FolderButton({
               setIsModalOpen={setIsShareModalOpen}
               label={label}
               shared={shared}
-              folderAccount={folderAccount}
+              folderAccount={id}
             />
           </div>
         </div>

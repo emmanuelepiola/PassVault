@@ -503,13 +503,17 @@ app.get('/api/folders', async (req, res) => {
         f.id, 
         f.name, 
         f.created_by, 
+        owner.email AS owner_email,
         f.shared, 
-        ARRAY_AGG(u.email) FILTER (WHERE u.email IS NOT NULL) AS shared_with
+        ARRAY_AGG(DISTINCT u.email) FILTER (WHERE u.email IS NOT NULL) AS shared_with
       FROM folders f
+      LEFT JOIN users owner ON f.created_by = owner.id
       LEFT JOIN folder_users fu ON f.id = fu.folder_id
       LEFT JOIN users u ON fu.user_id = u.id
-      WHERE f.created_by = $1 OR fu.user_id = $1
-      GROUP BY f.id
+      WHERE f.created_by = $1 OR f.id IN (
+        SELECT folder_id FROM folder_users WHERE user_id = $1
+      )
+      GROUP BY f.id, owner.email
     `;
     const result = await pool.query(query, [userId]);
 
@@ -517,8 +521,9 @@ app.get('/api/folders', async (req, res) => {
       id: row.id,
       name: row.name,
       created_by: row.created_by,
-      shared: row.shared === 1, // Converti il valore numerico in booleano
-      shared_with: row.shared_with || [], // Array di email con cui la cartella è condivisa
+      owner_email: row.owner_email,
+      shared: row.shared === 1,
+      shared_with: row.shared_with || [],
     }));
 
     res.status(200).json({ folders });
