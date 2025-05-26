@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSelection, Folder } from '../context';
 import ShareModal from './ShareModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import ShareConfirmationModal from './ShareConfermationModal'; // ✅ importato
 
 type Props = {
   id: string;
@@ -32,6 +33,8 @@ export default function FolderButton({
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isShareConfirmOpen, setIsShareConfirmOpen] = useState(false); // ✅ nuovo stato
+
   const isSelected = selection === id;
 
   function handleClick() {
@@ -55,11 +58,16 @@ export default function FolderButton({
 
   function handleShare(e: React.MouseEvent) {
     e.stopPropagation();
-    toggleShared(!shared);
+    setIsShareConfirmOpen(true); // ✅ apri conferma
   }
 
-  function toggleShared(state: boolean) {
-    updateFolder(id, { shared: state }); // Usa updateFolder per aggiornare lo stato
+  function confirmShareToggle() {
+    updateFolder(id, { shared: !shared }); // ✅ cambia stato
+    setIsShareConfirmOpen(false);
+  }
+
+  function cancelShareToggle() {
+    setIsShareConfirmOpen(false);
   }
 
   function handleShowSharedWith(e: React.MouseEvent) {
@@ -68,7 +76,7 @@ export default function FolderButton({
   }
 
   function setSharedWith(updated: string[]) {
-    //Eliminare
+    // Placeholder per update future
   }
 
   return (
@@ -126,7 +134,7 @@ export default function FolderButton({
             <ShareModal
               sharedWith={sharedWith}
               setSharedWith={setSharedWith}
-              setShared={toggleShared}
+              setShared={(state) => updateFolder(id, { shared: state })}
               isModalOpen={isShareModalOpen}
               setIsModalOpen={setIsShareModalOpen}
               label={label}
@@ -143,6 +151,16 @@ export default function FolderButton({
           folderName={label}
           onConfirm={confirmDelete}
           onCancel={cancelDelete}
+        />
+      )}
+
+      {/* Share confirmation modal ✅ */}
+      {isShareConfirmOpen && (
+        <ShareConfirmationModal
+          folderName={label}
+          isShared={shared}
+          onConfirm={confirmShareToggle}
+          onCancel={cancelShareToggle}
         />
       )}
     </>

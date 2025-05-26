@@ -82,13 +82,18 @@ export default function DisplayModal({
 
   const handleClose = () => {
     setIsModalOpen(false);
+    resetFields();
+    hasShownAlertRef.current = false;
+  };
+
+  const resetFields = () => {
     setTag(initialTag);
     setWebsite(initialWebsite);
     setUsername(initialUsername);
     setPassword(initialPassword);
     setCopiedField(null);
     setIsEditing(false);
-    hasShownAlertRef.current = false;
+    document.activeElement instanceof HTMLElement && document.activeElement.blur();
   };
 
   const checkIfAnyFieldChanged = () => {
@@ -152,98 +157,70 @@ export default function DisplayModal({
 
         <form className="flex flex-col gap-4 min-w-[280px]" onSubmit={(e) => e.preventDefault()}>
           {/* Tag */}
-          <label className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">label</span>
-            <input
-              ref={tagRef}
-              type="text"
-              value={tag}
-              readOnly={!isEditing}
-              onChange={(e) => setTag(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={() => checkIfAnyFieldChanged()}
-              className="pl-10 pr-10 py-2 border border-gray-300 rounded w-full focus:outline-none"
-              placeholder="Tag"
-            />
-            <span
-              onClick={() => copyToClipboard(tag, 'tag')}
-              className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
-            >
-              {copiedField === 'tag' ? 'check' : 'content_copy'}
-            </span>
-          </label>
+          {[{ label: 'label', value: tag, setter: setTag, field: 'tag', ref: tagRef },
+            { label: 'language', value: website, setter: setWebsite, field: 'website' },
+            { label: 'person', value: username, setter: setUsername, field: 'username' },
+            { label: 'lock', value: password, setter: setPassword, field: 'password' }
+          ].map(({ label, value, setter, field, ref }) => (
+            <label key={field} className="relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                {label}
+              </span>
+              <input
+                ref={ref}
+                type="text"
+                value={value}
+                readOnly={!isEditing}
+                onChange={(e) => setter(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={() => checkIfAnyFieldChanged()}
+                className="pl-10 pr-10 py-2 border border-gray-300 rounded w-full focus:outline-none"
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              />
+              <span
+                onClick={() => copyToClipboard(value, field)}
+                className="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
+              >
+                {copiedField === field ? 'check' : 'content_copy'}
+              </span>
+              {isEditing && field === 'password' && (
+                <span
+                  onClick={() => setter(Math.random().toString(36).slice(-12))}
+                  className="material-symbols-outlined absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
+                >
+                  autorenew
+                </span>
+              )}
+            </label>
+          ))}
 
-          {/* Website */}
-          <label className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">language</span>
-            <input
-              type="text"
-              value={website}
-              readOnly={!isEditing}
-              onChange={(e) => setWebsite(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={() => checkIfAnyFieldChanged()}
-              className="pl-10 pr-10 py-2 border border-gray-300 rounded w-full focus:outline-none"
-              placeholder="Website"
-            />
-            <span
-              onClick={() => copyToClipboard(website, 'website')}
-              className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
+          {/* Bottoni */}
+          {isEditing ? (
+            <div className="flex gap-4 mt-6">
+              <button
+                type="button"
+                onClick={resetFields}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded transition-colors"
+              >
+                Annulla
+              </button>
+              <button
+                type="button"
+                onClick={toggleEdit}
+                className="w-full bg-blue-100 hover:bg-blue-200 text-gray-700 font-semibold py-2 px-4 rounded transition-colors"
+              >
+                Salva modifiche
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="mt-6 w-full bg-blue-100 hover:bg-blue-200 text-gray-700 font-semibold py-2 px-4 rounded transition-colors"
+              onClick={toggleEdit}
             >
-              {copiedField === 'website' ? 'check' : 'content_copy'}
-            </span>
-          </label>
-
-          {/* Username */}
-          <label className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">person</span>
-            <input
-              type="text"
-              value={username}
-              readOnly={!isEditing}
-              onChange={(e) => setUsername(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={() => checkIfAnyFieldChanged()}
-              className="pl-10 pr-10 py-2 border border-gray-300 rounded w-full focus:outline-none"
-              placeholder="Username"
-            />
-            <span
-              onClick={() => copyToClipboard(username, 'username')}
-              className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
-            >
-              {copiedField === 'username' ? 'check' : 'content_copy'}
-            </span>
-          </label>
-
-          {/* Password */}
-          <label className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
-            <input
-              type="text"
-              value={password}
-              readOnly={!isEditing}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={() => checkIfAnyFieldChanged()}
-              className="pl-10 pr-10 py-2 border border-gray-300 rounded w-full focus:outline-none"
-              placeholder="Password"
-            />
-            <span
-              onClick={() => copyToClipboard(password, 'password')}
-              className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
-            >
-              {copiedField === 'password' ? 'check' : 'content_copy'}
-            </span>
-          </label>
-
-          {/* Bottone Edit/Salva */}
-          <button
-            type="button"
-            className="mt-6 bg-blue-100 hover:bg-blue-200 text-gray-700 font-semibold py-2 px-4 rounded transition-colors"
-            onClick={toggleEdit}
-          >
-            {isEditing ? 'Salva modifiche' : 'Modifica'}
-          </button>
+              Modifica
+            </button>
+          )}
         </form>
       </div>
     </div>

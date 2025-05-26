@@ -7,6 +7,17 @@ type Props = {
   setIsModalOpen: (value: boolean) => void;
 };
 
+// Funzione per generare una password sicura
+function generateSecurePassword(length = 16): string {
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    const randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
+    password += randomChar;
+  }
+  return password;
+}
+
 export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
   const { ID, selection, setID, postItem, account } = useSelection();
 
@@ -65,30 +76,26 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  console.log("handleSubmit chiamato");
-  e.preventDefault();
-  const newID = parseInt(ID).toString();
-  setID(newID);
+    e.preventDefault();
+    const newID = parseInt(ID).toString();
+    setID(newID);
 
-  const folderID = (selection === "All Items" || selection === "Password Health") ? "0" : selection;
+    const folderID = (selection === "All Items" || selection === "Password Health") ? "0" : selection;
 
-  const newItem: Item = {
-    account: account,
-    id: ID,
-    tag: tag,
-    website: website,
-    username: username,
-    password: password,
-    folderID: folderID,
-    securityLevel: "unknown",
+    const newItem: Item = {
+      account: account,
+      id: ID,
+      tag: tag,
+      website: website,
+      username: username,
+      password: password,
+      folderID: folderID,
+      securityLevel: "unknown",
+    };
+
+    await postItem(newItem);
+    closeModal();
   };
-
-  console.log("Nuovo elemento creato:", newItem); // Log per debug
-
-  await postItem(newItem); // Invia l'elemento al backend
-
-  closeModal();
-};
 
   if (!shouldRender) return null;
 
@@ -148,6 +155,7 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
             />
           </label>
 
+          {/* Campo password con 3 icone ravvicinate */}
           <label className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
             <input
@@ -156,26 +164,40 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="pl-10 pr-20 py-2 border border-gray-300 rounded w-full focus:outline-none"
+              className="pl-10 pr-28 py-2 border border-gray-300 rounded w-full focus:outline-none"
               required
             />
+
+            {/* Genera password */}
+            <button
+              type="button"
+              onClick={() => setPassword(generateSecurePassword())}
+              className="absolute right-[80px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+              aria-label="Generate password"
+            >
+              <span className="material-symbols-outlined text-base">autorenew</span>
+            </button>
+
+            {/* Mostra/Nascondi password */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+              className="absolute right-[45px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              <span className="material-symbols-outlined">
+              <span className="material-symbols-outlined text-base">
                 {showPassword ? 'visibility_off' : 'visibility'}
               </span>
             </button>
+
+            {/* Copia password */}
             <button
               type="button"
               onClick={copyToClipboard}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+              className="absolute right-[10px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
               aria-label="Copy password"
             >
-              <span className="material-symbols-outlined">
+              <span className="material-symbols-outlined text-base">
                 {copied ? 'done_all' : 'content_copy'}
               </span>
             </button>
@@ -193,4 +215,3 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
     </div>
   );
 }
-
