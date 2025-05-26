@@ -6,6 +6,7 @@ export type Folder = {
   account: string;
   id: string;
   label: string;
+  name?: string;
   shared: boolean;
   editable: boolean;
   sharedWith: string[];
@@ -253,19 +254,24 @@ const updateFolder = async (id: string, updates: Partial<Folder>) => {
   const folder = folders.find(folder => folder.id === id);
   if (!folder) return;
 
+  // Conversione: se updates.label esiste, rinominalo in name
+  const backendUpdates = { ...updates };
+  if ('label' in backendUpdates) {
+    backendUpdates.name = backendUpdates.label;
+    delete backendUpdates.label;
+  }
+
   try {
     const response = await fetch(`http://localhost:8000/updateFolder/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       mode: 'cors',
       credentials: 'include',
-      body: JSON.stringify(updates), // Passa solo i campi da aggiornare
+      body: JSON.stringify(backendUpdates), // Passa i campi corretti al backend
     });
 
     if (response.ok) {
       console.log('Cartella aggiornata con successo');
-
-      // Aggiorna lo stato locale
       const updatedFolder = { ...folder, ...updates };
       setFolders(folders.map(f => (f.id === id ? updatedFolder : f)));
     } else {

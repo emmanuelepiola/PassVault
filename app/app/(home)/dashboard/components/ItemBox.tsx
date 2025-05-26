@@ -7,6 +7,7 @@ import { useEffect } from "react";
 type SecurityLevel = 'low' | 'medium' | 'high' | 'unknown';
 
 const securityOrder = {
+  unknown: 0,
   low: 1,
   medium: 2,
   high: 3,

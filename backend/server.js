@@ -441,10 +441,16 @@ app.get('/api/items', async (req, res) => {
         p.website, 
         p.folder_id, 
         p.security, 
-        f.name AS folder_name
+        f.name AS folder_name,
+        f.shared AS folder_shared
       FROM password p
       LEFT JOIN folders f ON p.folder_id = f.id
-      WHERE p.user_id = $1
+      WHERE (
+        p.user_id = $1
+        OR p.folder_id IN (
+          SELECT folder_id FROM folder_users WHERE user_id = $1
+        )
+      )
     `;
     const queryParams = [userId];
     if (folderId && folderId !== '0') {
@@ -469,10 +475,10 @@ app.get('/api/items', async (req, res) => {
           username: row.username,
           password: decryptedPassword,
           website: row.website,
-          folderId: row.folder_id !== null ? row.folder_id : 0, // Sostituisci solo se è null,
+          folderId: row.folder_id !== null ? row.folder_id : 0,
           folderName: row.folder_name || 'No Folder',
           securityLevel,
-          sharedFolder: row.folder_shared === 1, // Converti il valore numerico in booleano
+          sharedFolder: row.folder_shared === 1,
         };
       })
     );

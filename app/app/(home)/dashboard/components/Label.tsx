@@ -10,7 +10,7 @@ type Props = {
 };
 
 export default function Label({ label }: Props) {
-  const { folders ,account ,updateFolder } = useSelection();
+  const { folders ,account , updateFolder } = useSelection();
 
   const isSystemLabel =
     label === 'Password Generator' ||
@@ -37,14 +37,8 @@ export default function Label({ label }: Props) {
 
 //==============================================UPDATE LABEL==============================================
   const handleLabelChange = (newLabel: string) => {
-    updateFolder({
-      account: account,
-      id: label,
-      label: folder.label,
-      shared: folder.shared,
-      editable: folder.editable,
-      sharedWith: folder.sharedWith
-    });
+    if (!folder) return;
+    updateFolder(folder.id, { label : newLabel });
   };
 //==============================================ENDUPDATE LABEL==============================================
 

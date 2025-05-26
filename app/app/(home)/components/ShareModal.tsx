@@ -30,8 +30,9 @@ export default function ShareModal({
   
   useEffect(() => {
     setMounted(true);
-    setLocalSharedWith(sharedWith); // inizializza
-  }, [sharedWith]);
+    // Escludi la propria email all'inizializzazione
+    setLocalSharedWith(sharedWith.filter(email => email && email !== account));
+  }, [sharedWith, account]);
 
   if (!isModalOpen || !mounted) return null;
 
@@ -55,10 +56,10 @@ export default function ShareModal({
   }
 
   function handleBlur() {
-    const cleaned = localSharedWith.filter((v) => v.trim() !== '');
+    // Escludi la propria email prima di inviare
+    const cleaned = localSharedWith.filter((v) => v.trim() !== '' && v !== account);
     setSharedWith(cleaned);
 
-    // Invia tutte le email (anche non valide formalmente) al backend
     cleaned.forEach(async (email) => {
       const result = await shareFolderWithUser(email, folderAccount);
       if (!result.success) {
