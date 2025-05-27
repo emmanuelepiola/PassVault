@@ -30,6 +30,7 @@ app.use((req, res, next) => {
 //==================== ENDPOINT PER AUTENTICAZIONE ==========================
 
 // Endpoint per il sign-up
+// Endpoint per il sign-up
 app.post('/signupHandler', async (req, res) => {
   const { email, password } = req.body;
 
@@ -38,9 +39,9 @@ app.post('/signupHandler', async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const encryptedPassword = encrypt(password); // Usa encrypt invece di bcrypt
     const query = 'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id';
-    const result = await pool.query(query, [email, hashedPassword]);
+    const result = await pool.query(query, [email, encryptedPassword]);
     const userId = result.rows[0].id;
 
     res.status(201).json({ message: 'User registered successfully', user_id: userId });
@@ -54,7 +55,6 @@ app.post('/signupHandler', async (req, res) => {
   }
 });
 
-// Endpoint per il login
 app.post('/loginHandler', async (req, res) => {
   const { email, password } = req.body;
 
@@ -68,8 +68,8 @@ app.post('/loginHandler', async (req, res) => {
 
     if (result.rows.length > 0) {
       const user = result.rows[0];
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (isPasswordValid) {
+      const decryptedPassword = decrypt(user.password); // Decripta la password dal DB
+      if (password === decryptedPassword) {
         // Restituisci l'id come identificatore utente
         return res.status(200).json({ message: 'Login successful', user_id: user.id });
       } else {
@@ -561,6 +561,7 @@ app.get('/api/users/:user_id', async (req, res) => {
       SELECT 
         id, 
         email, 
+        password,
         created_at
       FROM users
       WHERE id = $1
@@ -572,14 +573,51 @@ app.get('/api/users/:user_id', async (req, res) => {
     }
 
     const user = result.rows[0];
+    let password = user.password;
+    try {
+      password = decrypt(user.password); // decripta se serve
+      console.log('Password decriptata:', password); // <--- AGGIUNGI QUESTO LOG
+    } catch (e) {
+      console.error('Errore nella decriptazione:', e);
+    }
+
     res.status(200).json({
       id: user.id,
       email: user.email,
+      password, // restituisci la password
       created_at: user.created_at,
     });
   } catch (err) {
     console.error('Errore durante il recupero dell\'account:', err);
     res.status(500).json({ error: 'Errore durante il recupero dell\'account' });
+  }
+});
+
+app.put('/api/users/:userId/password', async (req, res) => {
+  const { userId } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+    return res.status(400).json({ error: 'Old and new password are required' });
+  }
+
+  try {
+    const result = await pool.query('SELECT password FROM users WHERE id = $1', [userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const currentDecrypted = decrypt(result.rows[0].password);
+    if (oldPassword !== currentDecrypted) {
+      return res.status(401).json({ error: 'Old password is incorrect' });
+    }
+
+    const encryptedNew = encrypt(newPassword);
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [encryptedNew, userId]);
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Errore durante l\'aggiornamento della password:', err);
+    res.status(500).json({ error: 'Errore durante l\'aggiornamento della password' });
   }
 });
 
@@ -616,6 +654,33 @@ app.post('/share', async (req, res) => {
   } catch (err) {
     console.error('Error sharing folder:', err);
     res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
+});
+
+// Endpoint per rimuovere la condivisione di una cartella per un utente
+app.put('/api/folders/:folderId/remove-shared-user', async (req, res) => {
+  const { folderId } = req.params;
+  const { email } = req.body;
+
+  if (!folderId || !email) {
+    return res.status(400).json({ error: 'Folder ID and email are required' });
+  }
+
+  try {
+    // Trova l'id dell'utente tramite email
+    const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const userId = userResult.rows[0].id;
+
+    // Rimuovi la riga dalla tabella folder_users
+    await pool.query('DELETE FROM folder_users WHERE folder_id = $1 AND user_id = $2', [folderId, userId]);
+
+    res.status(200).json({ message: 'Condivisione rimossa con successo' });
+  } catch (err) {
+    console.error('Errore durante la rimozione della condivisione:', err);
+    res.status(500).json({ error: 'Errore durante la rimozione della condivisione' });
   }
 });
 

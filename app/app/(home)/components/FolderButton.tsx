@@ -30,6 +30,7 @@ export default function FolderButton({
     deleteFolder,
     updateFolder,
     account,
+    removeSharedFolderForUser
   } = useSelection();
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -49,7 +50,13 @@ export default function FolderButton({
   }
 
   function confirmDelete() {
-    deleteFolder(id);
+    if (ownerEmail === account) {
+      // Sei il proprietario: elimina la cartella dal database
+      deleteFolder(id);
+    } else {
+      // NON sei il proprietario: elimina solo la condivisione per te
+      removeSharedFolderForUser(id, account);
+    }
     setIsDeleteModalOpen(false);
   }
 

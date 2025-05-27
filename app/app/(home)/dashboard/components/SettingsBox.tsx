@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSelection } from "../../context";
+import { useRouter } from "next/navigation";
 
 export default function PasswordGeneratorBox() {
-  const { account } = useSelection();
-  const [password, setPassword] = useState("************");
+  const { account, password, changePassword} = useSelection();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -12,6 +12,9 @@ export default function PasswordGeneratorBox() {
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [repeatPass, setRepeatPass] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     if (isModalOpen) setShouldRender(true);
@@ -32,13 +35,18 @@ export default function PasswordGeneratorBox() {
     }
   }, [isModalOpen]);
 
-  const handlePasswordChange = () => {
-    if (newPass === repeatPass && oldPass === password) {
-      setPassword(newPass);
+  const handlePasswordChange = async () => {
+    const result = await changePassword(oldPass, newPass, repeatPass);
+    if (result.success) {
       closeModal();
     } else {
-      alert("Controlla che le password siano corrette e corrispondenti.");
+      alert(result.error);
     }
+  };
+
+    const handleLogout = () => {
+    sessionStorage.clear(); // oppure sessionStorage.removeItem('userId');
+    router.push("/login");  // reindirizza alla pagina di login
   };
 
   const closeModal = () => {
@@ -64,7 +72,25 @@ export default function PasswordGeneratorBox() {
         {/* Password */}
         <div className="flex w-full items-center justify-between border-b border-gray-200 pb-5 px-8 md:px-[10%]">
           <span className="text-gray-500 font-medium">Password</span>
-          <span className="font-semibold">{password}</span>
+            <span className="font-semibold flex items-center gap-2 relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                readOnly
+                className="bg-transparent border-none outline-none font-semibold w-[180px] select-all"
+                style={{ letterSpacing: "2px" }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="ml-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+                aria-label={showPassword ? "Nascondi password" : "Mostra password"}
+              >
+                <span className="material-symbols-outlined text-base">
+                  {showPassword ? "visibility_off" : "visibility"}
+                </span>
+              </button>
+            </span>
         </div>
 
         {/* Buttons */}
@@ -75,7 +101,10 @@ export default function PasswordGeneratorBox() {
           >
             Edit Password
           </button>
-          <button className="rounded bg-blue-100 text-gray-700 px-3 py-1 text-sm hover:bg-blue-200 transition">
+          <button
+            className="rounded bg-blue-100 text-gray-700 px-3 py-1 text-sm hover:bg-blue-200 transition"
+            onClick={handleLogout}
+          >
             Logout
           </button>
         </div>

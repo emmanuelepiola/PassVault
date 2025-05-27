@@ -47,12 +47,17 @@ type SelectionContextType = {
   account: string;
   setAccount: (value: string) => void;
   shareFolderWithUser: (email: string, folderId: string) => Promise<{ success: boolean; message: string }>;
+  removeSharedFolderForUser: (folderId: string, userEmail: string) => Promise<void>;
+  password: string; 
+  setPassword: (value: string) => void;
+  changePassword: (oldPass: string, newPass: string, repeatPass: string) => Promise<{ success: boolean; error?: string }>;
 };
 
 const SelectionContext = createContext<SelectionContextType | undefined>(undefined);
 
 export const SelectionProvider = ({ children }: { children: React.ReactNode }) => {
   const [account, setAccount] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [selection, setSelection] = useState("All Items");
   const [ID, setID] = useState("0");
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -71,30 +76,32 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
 
 
   const getAccount = async () => {
-  const userId = sessionStorage.getItem('userId');
-  if (!userId) {
-    console.error('Utente non loggato!');
-    return;
-  }
-
-  try {
-    const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // Se necessario per autenticazione
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Account recuperato:', data);
-      setAccount(data.email); // Supponendo che il backend restituisca un oggetto con una proprietà `email`
-    } else {
-      console.error('Errore nel recupero dell\'account:', response.statusText);
+    const userId = sessionStorage.getItem('userId');
+    if (!userId) {
+      console.error('Utente non loggato!');
+      return;
     }
-  } catch (error) {
-    console.error('Errore durante il recupero dell\'account:', error);
-  }
-};
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Account recuperato:', data);
+        console.log('Password decriptata dal backend:', data.password);
+        setAccount(data.email);
+        setPassword(data.password); 
+      } else {
+        console.error('Errore nel recupero dell\'account:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Errore durante il recupero dell\'account:', error);
+    }
+  };
 
 const getFolders = async () => {
   const userId = sessionStorage.getItem('userId');
@@ -384,11 +391,66 @@ const shareFolderWithUser = async (email: string, folderId: string) => {
   }
 };
   
+const removeSharedFolderForUser = async (folderId: string, userEmail: string) => {
+  // Aggiorna la cartella localmente
+  setFolders((prevFolders) =>
+    prevFolders.map((folder) =>
+      folder.id === folderId
+        ? { ...folder, sharedWith: folder.sharedWith.filter(email => email !== userEmail) }
+        : folder
+    )
+  );
+
+  // Aggiorna anche sul backend
+  try {
+    const response = await fetch(`http://localhost:8000/api/folders/${folderId}/remove-shared-user`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: userEmail }),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.error('Errore durante la rimozione della condivisione:', data.error);
+    }
+  } catch (error) {
+    console.error('Errore durante la rimozione della condivisione:', error);
+  }
+};
+
+const changePassword = async (oldPass: string, newPass: string, repeatPass: string): Promise<{ success: boolean; error?: string }> => {
+  if (newPass !== repeatPass) {
+    return { success: false, error: "Le nuove password non coincidono." };
+  }
+  const userId = sessionStorage.getItem('userId');
+  if (!userId) {
+    return { success: false, error: "Utente non loggato." };
+  }
+  try {
+    const response = await fetch(`http://localhost:8000/api/users/${userId}/password`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ oldPassword: oldPass, newPassword: newPass }),
+      credentials: "include",
+    });
+    if (response.ok) {
+      setPassword(newPass);
+      return { success: true };
+    } else {
+      const data = await response.json();
+      return { success: false, error: data.error || "Errore durante l'aggiornamento della password." };
+    }
+  } catch {
+    return { success: false, error: "Errore di rete." };
+  }
+};
+
   //=========== Fine funzioni per le richieste HTTP ============//
 
   return (
     <SelectionContext.Provider
-      value={{selection,account,setAccount,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm, shareFolderWithUser}}
+      value={{selection,account,setAccount,setSelection,ID,setID,folders,setFolders,items,setItems,getFolders,getItems,postFolder,postItem,updateFolder,updateItem,deleteFolder,deleteItem,searchTerm,setSearchTerm, shareFolderWithUser, removeSharedFolderForUser, password, setPassword, changePassword}}
     >
       {children}
     </SelectionContext.Provider>
