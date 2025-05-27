@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export type Folder = {
   account: string;
@@ -63,7 +64,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
   const [folders, setFolders] = useState<Folder[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [items, setItems] = useState<Item[]>([]);
-
+  const router = useRouter();
   //=========== Funzioni per le richieste HTTP ============//
 
   // ===== GET automatico al mount =====
@@ -78,7 +79,8 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
   const getAccount = async () => {
     const userId = sessionStorage.getItem('userId');
     if (!userId) {
-      console.error('Utente non loggato!');
+      // console.error('Utente non loggato!');
+      router.push('/login');
       return;
     }
 
@@ -106,7 +108,8 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
 const getFolders = async () => {
   const userId = sessionStorage.getItem('userId');
   if (!userId) {
-    console.error('Utente non loggato!');
+    // console.error('Utente non loggato!');
+    router.push('/login');
     return;
   }
 
@@ -144,7 +147,8 @@ const getFolders = async () => {
 const getItems = async () => {
   const userId = sessionStorage.getItem('userId');
   if (!userId) {
-    console.error('Utente non loggato!');
+    // console.error('Utente non loggato!');
+    router.push('/login');
     return;
   }
 
@@ -185,7 +189,8 @@ const getItems = async () => {
 const postFolder = async (folderName: string, isShared: boolean = false) => {
   const userId = sessionStorage.getItem('userId');
   if (!userId) {
-    console.error('Utente non loggato!');
+    // console.error('Utente non loggato!');
+    router.push('/login');
     return;
   }
 
@@ -227,7 +232,8 @@ const postFolder = async (folderName: string, isShared: boolean = false) => {
 const postItem = async (item: Item) => {
   const userId = sessionStorage.getItem('userId');
   if (!userId) {
-    console.error('Utente non loggato!');
+    // console.error('Utente non loggato!');
+    router.push('/login');
     return;
   }
 
