@@ -1,9 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
 const axios = require('axios');
 const crypto = require('crypto');
+const { sendPasswordResetEmail } = require('./emailService');
 
 const { hasSequential, hasRepetition, isPwned } = require('./passwordValidation.js');
 const { encrypt, decrypt } = require('./encryption.js'); 
@@ -681,6 +682,85 @@ app.put('/api/folders/:folderId/remove-shared-user', async (req, res) => {
   } catch (err) {
     console.error('Errore durante la rimozione della condivisione:', err);
     res.status(500).json({ error: 'Errore durante la rimozione della condivisione' });
+  }
+});
+
+//==================== ENDPOINT PER PASSWORD RESET ==========================
+
+// Endpoint per richiedere il reset della password
+app.post('/request-password-reset', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    // Verifica se l'utente esiste
+    const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userId = userResult.rows[0].id;
+
+    // Genera un token casuale
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Imposta la scadenza a 1 ora da ora
+    const expiresAt = new Date(Date.now() + 3600000); // 1 ora in millisecondi
+
+    // Salva il token nel database
+    await pool.query(
+      'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+      [userId, resetToken, expiresAt]
+    );
+
+    // Invia l'email
+    await sendPasswordResetEmail(email, resetToken);
+
+    res.status(200).json({ message: 'Password reset email sent successfully' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to process password reset request' });
+  }
+});
+
+// Endpoint per verificare il token e resettare la password
+app.post('/reset-password', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ error: 'Token and new password are required' });
+  }
+
+  try {
+    // Verifica il token
+    const tokenResult = await pool.query(
+      'SELECT user_id, used FROM password_reset_tokens WHERE token = $1 AND expires_at > NOW() AND used = false',
+      [token]
+    );
+
+    if (tokenResult.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid or expired token' });
+    }
+
+    const userId = tokenResult.rows[0].user_id;
+
+    // Cripta la nuova password
+    const encryptedPassword = encrypt(newPassword);
+
+    // Aggiorna la password dell'utente
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [encryptedPassword, userId]);
+
+    // Marca il token come usato
+    await pool.query('UPDATE password_reset_tokens SET used = true WHERE token = $1', [token]);
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
   }
 });
 

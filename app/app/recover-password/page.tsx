@@ -14,7 +14,7 @@ export default function RecoverPassword() {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:8000/checkEmailHandler', {
+      const response = await fetch('http://localhost:8000/request-password-reset', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,10 +25,12 @@ export default function RecoverPassword() {
       const result = await response.json();
 
       if (response.ok) {
-        setSuccess('Recovery email sent.');
-        // manda la mail di recupero
+        setSuccess('Recovery email sent. Please check your inbox.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 3000);
       } else {
-        setError('Email not found.');
+        setError(result.error || 'Failed to send recovery email.');
       }
     } catch (err) {
       setError('An unexpected error occurred.');
@@ -66,7 +68,7 @@ export default function RecoverPassword() {
             type="submit"
             className="w-full bg-[#54A9DA]/50 text-gray-900 py-3 px-4 rounded-[50px] hover:bg-[#4898c9]/50 transition-colors font-medium border border-black/5"
           >
-            Send Email
+            Send Recovery Email
           </button>
         </form>
 

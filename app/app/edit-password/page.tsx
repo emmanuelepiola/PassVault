@@ -1,6 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function EditPassword() {
   const [newPassword, setNewPassword] = useState('');
@@ -9,6 +10,15 @@ export default function EditPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+
+  useEffect(() => {
+    if (!token) {
+      router.push('/login');
+    }
+  }, [token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,9 +30,41 @@ export default function EditPassword() {
       return;
     }
 
-    // TODO: Implement backend communication here
-    setSuccess('Password updated successfully (mock)');
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8000/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token,
+          newPassword,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSuccess('Password updated successfully! Redirecting to login...');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        setError(result.error || 'Failed to update password');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred');
+    }
   };
+
+  if (!token) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
@@ -36,7 +78,7 @@ export default function EditPassword() {
             </svg>
           </div>
         </div>
-        <h1 className="text-[28px] font-medium text-center text-gray-900 mb-6">Edit Password</h1>
+        <h1 className="text-[28px] font-medium text-center text-gray-900 mb-6">Reset Password</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* New Password */}
@@ -86,7 +128,7 @@ export default function EditPassword() {
             type="submit"
             className="w-full bg-[#54A9DA]/50 text-gray-900 py-3 px-4 rounded-[50px] hover:bg-[#4898c9]/50 transition-colors font-medium border border-black/5"
           >
-            Save Password
+            Reset Password
           </button>
         </form>
       </div>
