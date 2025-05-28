@@ -2,13 +2,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react'; // ✅ Import icone occhio
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPasswordPage, setShowPasswordPage] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // ✅ Stato per mostrare/nascondere password
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
@@ -21,9 +21,7 @@ export default function Login() {
     try {
       const response = await fetch('http://localhost:8000/checkEmailHandler', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
@@ -49,9 +47,7 @@ export default function Login() {
     try {
       const response = await fetch('http://localhost:8000/loginHandler', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
@@ -103,7 +99,6 @@ export default function Login() {
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            {/* ✅ Campo password con toggle visibilità */}
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -116,12 +111,19 @@ export default function Login() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} // ✅ Toggle
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-900"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
+            </div>
+
+            {/* Link per il recupero password */}
+            <div className="text-right mt-1">
+              <Link href="/recover-password" className="text-sm text-[#54A9DA] hover:text-[#4898c9] font-medium">
+                Forgot your password?
+              </Link>
             </div>
 
             {error && <p className="text-red-500 text-sm text-center">{error}</p>}
