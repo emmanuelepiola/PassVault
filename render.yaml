@@ -1,6 +1,6 @@
 databases:
-  - name: pv-postgres
-    databaseName: pv
+  - name: passvault-db
+    databaseName: pv_8oi3
     user: francesco
     plan: free
 
@@ -10,23 +10,28 @@ services:
     env: docker
     repo: https://github.com/emmanuelepiola/PassVault
     dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
     autoDeploy: true
     envVars:
       - key: DB_HOST
         fromDatabase:
-          name: pv-postgres
+          name: passvault-db
           property: host
       - key: DB_PORT
-        value: "5432"
+        fromDatabase:
+          name: passvault-db
+          property: port
+      - key: DB_NAME
+        value: pv_8oi3
       - key: DB_USER
-        value: francesco
+        fromDatabase:
+          name: passvault-db
+          property: user
       - key: DB_PASSWORD
         fromDatabase:
-          name: pv-postgres
+          name: passvault-db
           property: password
-      - key: DB_NAME
-        value: pv
       - key: ENCRYPTION_KEY
         value: 12345678901234567890123456789012
       - key: IV
@@ -35,7 +40,7 @@ services:
         fromService:
           type: web
           name: frontend
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
       - key: EMAIL_USER
         value: your-email@gmail.com
       - key: EMAIL_PASS
@@ -46,6 +51,7 @@ services:
     env: docker
     repo: https://github.com/emmanuelepiola/PassVault
     dockerfilePath: ./app/Dockerfile
+    dockerContext: ./app
     plan: free
     autoDeploy: true
     envVars:
@@ -53,6 +59,6 @@ services:
         fromService:
           type: web
           name: backend
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL
       - key: NEXT_PUBLIC_GOOGLE_CLIENT_ID
         value: your-google-client-id-here
