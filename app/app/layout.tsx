@@ -1,8 +1,11 @@
+'use client';
+
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import './globals.css'
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html>
+        <html lang="en">
             <head>
                 <link
                 href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
@@ -10,7 +13,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 />
             </head>
             <body className="w-screen h-screen">
-             {children}
+                <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                    {children}
+                </GoogleOAuthProvider>
             </body>
         </html>
     )

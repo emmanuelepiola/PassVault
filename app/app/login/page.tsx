@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
+import { useGoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -68,6 +70,42 @@ export default function Login() {
     }
   };
 
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        // Ottieni i dettagli dell'utente da Google
+        const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${response.access_token}` },
+        }).then(res => res.json());
+
+        // Invia l'email al backend
+        const backendResponse = await fetch('http://localhost:8000/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userInfo.email }),
+        });
+
+        const data = await backendResponse.json();
+
+        if (backendResponse.ok) {
+          sessionStorage.setItem('userId', data.user_id);
+          setSuccess('Login successful! Redirecting...');
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 2000);
+        } else {
+          setError('Failed to authenticate with Google');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setError('An unexpected error occurred');
+      }
+    },
+    onError: () => {
+      setError('Google login failed');
+    },
+  });
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       if (!showPasswordPage) {
@@ -119,7 +157,6 @@ export default function Login() {
               </button>
             </div>
 
-            {/* Link per il recupero password */}
             <div className="text-right mt-1">
               <Link href="/recover-password" className="text-sm text-[#54A9DA] hover:text-[#4898c9] font-medium">
                 Forgot your password?
@@ -127,6 +164,7 @@ export default function Login() {
             </div>
 
             {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            {success && <p className="text-green-600 text-sm text-center">{success}</p>}
 
             <button
               type="submit"
@@ -194,10 +232,11 @@ export default function Login() {
 
           <button
             type="button"
+            onClick={() => handleGoogleLogin()}
             className="w-full flex items-center justify-center gap-2 bg-[#54A9DA]/30 text-gray-900 py-3 px-4 rounded-[50px] hover:bg-[#4898c9]/30 transition-colors font-medium border border-black/5"
           >
             <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-            Sign in with Google
+            Continue with Google
           </button>
         </form>
 

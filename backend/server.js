@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const axios = require('axios');
 const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
 const { sendPasswordResetEmail } = require('./emailService');
 
 const { hasSequential, hasRepetition, isPwned } = require('./passwordValidation.js');
@@ -12,6 +13,9 @@ const pool = require('./db');
 
 const app = express();
 const port = 8000;
+
+// Inizializza il client OAuth2
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Middleware per il parsing del corpo delle richieste
 app.use(bodyParser.json());
@@ -761,6 +765,46 @@ app.post('/reset-password', async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+//==================== ENDPOINT PER LOGIN CON GOOGLE ==========================
+
+// Endpoint per il login con Google
+app.post('/auth/google', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    // Cerca l'utente nel database
+    let result = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    let userId;
+
+    if (result.rows.length === 0) {
+      // L'utente non esiste, crealo
+      // Genera una password casuale per l'account (non sarà mai usata per il login diretto)
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const encryptedPassword = encrypt(randomPassword);
+
+      const insertResult = await pool.query(
+        'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id',
+        [email, encryptedPassword]
+      );
+      userId = insertResult.rows[0].id;
+    } else {
+      userId = result.rows[0].id;
+    }
+
+    res.status(200).json({ 
+      message: 'Login successful',
+      user_id: userId
+    });
+  } catch (error) {
+    console.error('Error during Google authentication:', error);
+    res.status(401).json({ error: 'Authentication failed' });
   }
 });
 
