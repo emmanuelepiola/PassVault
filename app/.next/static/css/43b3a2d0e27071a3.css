@@ -1,0 +1,1 @@
+@keyframes fadeIn{0%{opacity:0}to{opacity:1}}.animate-fadeIn{animation:fadeIn 1.2s ease-in-out}@keyframes pulseSlow{0%,to{transform:scale(1)}50%{transform:scale(1.05)}}.animate-pulseSlow{animation:pulseSlow 2s ease-in-out infinite}@keyframes fadeOut{0%{opacity:1}to{opacity:0}}.animate-fadeOut{animation:fadeOut .8s ease-in-out forwards}

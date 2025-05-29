@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../config/api';
 
 export default function RecoverPassword() {
   const [email, setEmail] = useState('');
@@ -14,7 +15,7 @@ export default function RecoverPassword() {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:8000/request-password-reset', {
+      const response = await fetch(`${API_BASE_URL}/request-password-reset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

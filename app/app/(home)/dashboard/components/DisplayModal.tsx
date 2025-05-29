@@ -11,7 +11,7 @@ type Props = {
   website: string;
   username: string;
   password: string;
-  securityLevel: string;
+  securityLevel: "low" | "medium" | "high" | "unknown";
   folderID: string;
 };
 
@@ -35,7 +35,7 @@ export default function DisplayModal({
   const [website, setWebsite] = useState(initialWebsite);
   const [username, setUsername] = useState(initialUsername);
   const [password, setPassword] = useState(initialPassword);
-  const [securityLevel, setSecurityLevel] = useState<string>(initialSecurityLevel);
+  const [securityLevel, setSecurityLevel] = useState<"low" | "medium" | "high" | "unknown">(initialSecurityLevel);
   const [folderID, setFolderID] = useState(initialFolderID);
 
   useEffect(() => {
@@ -133,7 +133,8 @@ export default function DisplayModal({
         username,
         password,
         securityLevel,
-        folderID: folderID === '0' ? null : folderID,
+        folderID: folderID === '0' ? '0' : folderID,
+        sharedFolder: false,
       };
       updateItem(item);
       setFolderID(folderID);

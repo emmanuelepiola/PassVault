@@ -1,0 +1,29 @@
+1:"$Sreact.fragment"
+2:I[4970,[],"ClientSegmentRoot"]
+3:I[3414,["177","static/chunks/app/layout-d0681275338703d0.js"],"default"]
+4:I[7555,[],""]
+5:I[1295,[],""]
+7:I[1728,["268","static/chunks/268-a560cf05e8b71a28.js","790","static/chunks/app/(home)/layout-8e62ce581b95540e.js"],"default"]
+9:I[894,[],"ClientPageRoot"]
+a:I[1247,["268","static/chunks/268-a560cf05e8b71a28.js","826","static/chunks/app/(home)/dashboard/page-75375fba17918343.js"],"default"]
+d:I[9665,[],"MetadataBoundary"]
+f:I[9665,[],"OutletBoundary"]
+12:I[4911,[],"AsyncMetadataOutlet"]
+14:I[9665,[],"ViewportBoundary"]
+16:I[6614,[],""]
+:HL["/_next/static/css/18d4baf6472ea431.css","style"]
+:HL["/_next/static/css/43b3a2d0e27071a3.css","style"]
+:HL["/_next/static/css/526e45c521312400.css","style"]
+0:{"P":null,"b":"ebBNWHK1qMG2FHtni8mgH","p":"","c":["","dashboard"],"i":false,"f":[[["",{"children":["(home)",{"children":["dashboard",{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/18d4baf6472ea431.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/43b3a2d0e27071a3.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"Component":"$3","slots":{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","div",null,{"className":"h-screen w-screen flex items-center justify-center","children":["$","span",null,{"className":"text-xl animate-pulse","children":"404 - Page Not Found"}]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]},"params":{},"promise":"$@6"}]]}],{"children":["(home)",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/526e45c521312400.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L2",null,{"Component":"$7","slots":{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]},"params":"$0:f:0:1:1:props:children:1:props:params","promise":"$@8"}]]}],{"children":["dashboard",["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L9",null,{"Component":"$a","searchParams":{},"params":"$0:f:0:1:1:props:children:1:props:params","promises":["$@b","$@c"]}],["$","$Ld",null,{"children":"$Le"}],null,["$","$Lf",null,{"children":["$L10","$L11",["$","$L12",null,{"promise":"$@13"}]]}]]}],{},null,false]},null,false]},null,false]},[["$","div","l",{"className":"h-screen w-screen flex items-center justify-center","children":["$","span",null,{"className":"text-xl animate-pulse","children":"Caricamento..."}]}],[],[]],false],["$","$1","h",{"children":[null,["$","$1","g-pFty7bO77C0RWTkOewM",{"children":[["$","$L14",null,{"children":"$L15"}],null]}],null]}],false]],"m":"$undefined","G":["$16","$undefined"],"s":false,"S":true}
+17:"$Sreact.suspense"
+18:I[4911,[],"AsyncMetadata"]
+6:{}
+8:{}
+b:{}
+c:{}
+e:["$","$17",null,{"fallback":null,"children":["$","$L18",null,{"promise":"$@19"}]}]
+11:null
+15:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+10:null
+19:{"metadata":[["$","link","0",{"rel":"icon","href":"/favicon.ico","type":"image/x-icon","sizes":"16x16"}]],"error":null,"digest":"$undefined"}
+13:{"metadata":"$19:metadata","error":null,"digest":"$undefined"}

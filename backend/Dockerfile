@@ -2,12 +2,13 @@ FROM node:18
 
 WORKDIR /app
 
-# Copia i file di backend
+# Copia i file di package per npm install
 COPY backend/package*.json ./
 
 RUN npm install
 
-COPY backend .
+# Copia tutto il codice del backend
+COPY backend/ .
 
 EXPOSE 8000
 

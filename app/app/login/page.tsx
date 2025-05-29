@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
+import { API_BASE_URL } from '../../config/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -21,7 +21,7 @@ export default function Login() {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:8000/checkEmailHandler', {
+      const response = await fetch(`${API_BASE_URL}/checkEmailHandler`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -47,7 +47,7 @@ export default function Login() {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:8000/loginHandler', {
+      const response = await fetch(`${API_BASE_URL}/loginHandler`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -79,7 +79,7 @@ export default function Login() {
         }).then(res => res.json());
 
         // Invia l'email al backend
-        const backendResponse = await fetch('http://localhost:8000/auth/google', {
+        const backendResponse = await fetch(`${API_BASE_URL}/auth/google`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: userInfo.email }),

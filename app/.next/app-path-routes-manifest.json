@@ -1,0 +1,10 @@
+{
+  "/favicon.ico/route": "/favicon.ico",
+  "/edit-password/page": "/edit-password",
+  "/_not-found/page": "/_not-found",
+  "/recover-password/page": "/recover-password",
+  "/login/page": "/login",
+  "/signup/page": "/signup",
+  "/page": "/",
+  "/(home)/dashboard/page": "/dashboard"
+}

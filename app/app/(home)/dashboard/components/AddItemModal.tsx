@@ -86,6 +86,7 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
       password,
       folderID,
       securityLevel: "unknown",
+      sharedFolder: false,
     };
 
     await postItem(newItem);

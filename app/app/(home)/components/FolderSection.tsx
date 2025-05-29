@@ -42,7 +42,7 @@ const handleAddFolder = async (folderName: string) => {
       <SideBarFolderLabel label={label} addFolder={handleAddFolder} />
       {filteredFolders.map((folder, i) => (
         <FolderButton
-          folderAccount={account}
+          folderAccount={folder.account}
           key={i}
           id={folder.id}
           label={folder.label}
@@ -50,8 +50,7 @@ const handleAddFolder = async (folderName: string) => {
           shared={folder.shared}
           sharedWith={folder.sharedWith}
           editable={folder.editable}
-          onLabelChange={(newLabel) => updateFolder(folder.id, { label: newLabel })} // Usa updateFolder
-          folderAccount={folder.account}
+          onLabelChange={(newLabel) => updateFolder(folder.id, { label: newLabel })}
           ownerEmail={folder.ownerEmail}
         />
       ))}

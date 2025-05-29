@@ -14,6 +14,8 @@ type Props = {
   sharedWith: string[];
   folderAccount: string;
   ownerEmail: string;
+  editable: boolean;
+  onLabelChange?: (newLabel: string) => void;
 };
 
 export default function FolderButton({
@@ -22,7 +24,10 @@ export default function FolderButton({
   icon,
   shared,
   sharedWith,
-  ownerEmail
+  folderAccount,
+  ownerEmail,
+  editable,
+  onLabelChange
 }: Props) {
   const {
     selection,
@@ -149,7 +154,7 @@ export default function FolderButton({
               setIsModalOpen={setIsShareModalOpen}
               label={label}
               shared={shared}
-              folderAccount={id}
+              folderAccount={folderAccount}
               ownerEmail={ownerEmail}
             />
           </div>

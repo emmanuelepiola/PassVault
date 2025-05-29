@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../config/api';
 
 export type Folder = {
   account: string;
@@ -85,7 +86,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/users/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -114,7 +115,7 @@ const getFolders = async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:8000/api/folders?user_id=${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/folders?user_id=${userId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include', // Se necessario per autenticazione
@@ -154,7 +155,7 @@ const getItems = async () => {
 
   try {
     // Rimuovi il parametro folder_id dalla query string
-    const response = await fetch(`http://localhost:8000/api/items?user_id=${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/items?user_id=${userId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include', // Se necessario per autenticazione
@@ -195,7 +196,7 @@ const postFolder = async (folderName: string, isShared: boolean = false) => {
   }
 
   try {
-    const response = await fetch('http://localhost:8000/addFolder', {
+    const response = await fetch(`${API_BASE_URL}/addFolder`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -238,7 +239,7 @@ const postItem = async (item: Item) => {
   }
 
   try {
-    const response = await fetch('http://localhost:8000/addItem', {
+    const response = await fetch(`${API_BASE_URL}/addItem`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -278,7 +279,7 @@ const updateFolder = async (id: string, updates: Partial<Folder>) => {
   }
 
   try {
-    const response = await fetch(`http://localhost:8000/updateFolder/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/updateFolder/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       mode: 'cors',
@@ -300,7 +301,7 @@ const updateFolder = async (id: string, updates: Partial<Folder>) => {
 
 const updateItem = async (item: Item) => {
   try {
-    const response = await fetch(`http://localhost:8000/updateItem/${item.id}`, {
+    const response = await fetch(`${API_BASE_URL}/updateItem/${item.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -334,7 +335,7 @@ const updateItem = async (item: Item) => {
 
 const deleteFolder = async (id: string) => {
   try {
-    const response = await fetch(`http://localhost:8000/deleteFolder/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/deleteFolder/${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -355,7 +356,7 @@ const deleteFolder = async (id: string) => {
 
 const deleteItem = async (id: string) => {
   try {
-    const response = await fetch(`http://localhost:8000/deleteItem/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/deleteItem/${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -376,7 +377,7 @@ const deleteItem = async (id: string) => {
 
 const shareFolderWithUser = async (email: string, folderId: string) => {
   try {
-    const response = await fetch('http://localhost:8000/share', {
+    const response = await fetch(`${API_BASE_URL}/share`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, folderId }),
@@ -409,7 +410,7 @@ const removeSharedFolderForUser = async (folderId: string, userEmail: string) =>
 
   // Aggiorna anche sul backend
   try {
-    const response = await fetch(`http://localhost:8000/api/folders/${folderId}/remove-shared-user`, {
+    const response = await fetch(`${API_BASE_URL}/api/folders/${folderId}/remove-shared-user`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: userEmail }),
@@ -434,7 +435,7 @@ const changePassword = async (oldPass: string, newPass: string, repeatPass: stri
     return { success: false, error: "Utente non loggato." };
   }
   try {
-    const response = await fetch(`http://localhost:8000/api/users/${userId}/password`, {
+    const response = await fetch(`${API_BASE_URL}/api/users/${userId}/password`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ oldPassword: oldPass, newPassword: newPass }),

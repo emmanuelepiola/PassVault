@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { API_BASE_URL } from '../../config/api';
 
 export default function EditPassword() {
   const [newPassword, setNewPassword] = useState('');
@@ -36,7 +37,7 @@ export default function EditPassword() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/reset-password', {
+      const response = await fetch(`${API_BASE_URL}/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

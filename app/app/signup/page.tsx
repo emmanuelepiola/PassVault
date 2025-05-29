@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../config/api';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ export default function Signup() {
     }
   
     try {
-      const response = await fetch('http://localhost:8000/signupHandler', {
+      const response = await fetch(`${API_BASE_URL}/signupHandler`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

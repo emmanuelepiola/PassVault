@@ -1,0 +1,10 @@
+{
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/edit-password/page": "app/edit-password/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/recover-password/page": "app/recover-password/page.js",
+  "/login/page": "app/login/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/page": "app/page.js",
+  "/(home)/dashboard/page": "app/(home)/dashboard/page.js"
+}
