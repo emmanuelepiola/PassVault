@@ -24,12 +24,24 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:3000',
-    process.env.FRONTEND_URL
+    'https://localhost:3000',
+    process.env.FRONTEND_URL,
+    `https://${process.env.FRONTEND_URL}`, // In case FRONTEND_URL is just the hostname
+    'https://frontend-5mhu.onrender.com' // Hardcoded for your specific deployment
   ].filter(Boolean); // Remove any undefined values
 
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
+  console.log('Request origin:', origin);
+  console.log('Allowed origins:', allowedOrigins);
+  
+  // Check if origin is from onrender.com domain (more permissive for Render)
+  const isRenderOrigin = origin && origin.includes('onrender.com') && origin.includes('frontend');
+  
+  if (allowedOrigins.includes(origin) || isRenderOrigin) {
     res.header('Access-Control-Allow-Origin', origin);
+    console.log('CORS: Origin allowed');
+  } else {
+    console.log('CORS: Origin blocked');
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');  
