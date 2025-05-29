@@ -123,6 +123,16 @@ export default function DisplayModal({
     }
   };
 
+  function generateSecurePassword(length = 16): string {
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    const randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
+    password += randomChar;
+  }
+  return password;
+}
+
   const toggleEdit = () => {
     if (!isEditing) {
       setIsEditing(true);
@@ -179,7 +189,6 @@ export default function DisplayModal({
                 readOnly={!isEditing}
                 onChange={(e) => setter(e.target.value)}
                 onKeyDown={handleKeyDown}
-                onBlur={() => checkIfAnyFieldChanged()}
                 className="pl-10 pr-10 py-2 border border-gray-300 rounded w-full focus:outline-none"
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
               />
@@ -191,7 +200,7 @@ export default function DisplayModal({
               </span>
               {isEditing && field === 'password' && (
                 <span
-                  onClick={() => setter(Math.random().toString(36).slice(-12))}
+                  onClick={() => setter(generateSecurePassword())}
                   className="material-symbols-outlined absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
                 >
                   autorenew
