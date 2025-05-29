@@ -34,12 +34,13 @@ export default function DisplayModal({
   const [username, setUsername] = useState(initialUsername);
   const [password, setPassword] = useState(initialPassword);
   const [securityLevel, setSecurityLevel] = useState<string>(initialSecurityLevel);
+  const [folderID, setFolderID] = useState('0');
 
   const modalRef = useRef<HTMLDivElement>(null);
   const hasShownAlertRef = useRef(false);
   const tagRef = useRef<HTMLInputElement>(null);
 
-  const { updateItem, account } = useSelection();
+  const { updateItem, account, folders } = useSelection();
 
   useEffect(() => {
     if (isModalOpen) {
@@ -64,7 +65,7 @@ export default function DisplayModal({
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [tag, website, username, password]);
+  }, [tag, website, username, password, folderID]);
 
   const copyToClipboard = (value: string, field: string) => {
     navigator.clipboard.writeText(value);
@@ -91,6 +92,7 @@ export default function DisplayModal({
     setWebsite(initialWebsite);
     setUsername(initialUsername);
     setPassword(initialPassword);
+    setFolderID('0');
     setCopiedField(null);
     setIsEditing(false);
     document.activeElement instanceof HTMLElement && document.activeElement.blur();
@@ -99,7 +101,11 @@ export default function DisplayModal({
   const checkIfAnyFieldChanged = () => {
     if (
       !hasShownAlertRef.current &&
-      (tag !== initialTag || website !== initialWebsite || username !== initialUsername || password !== initialPassword)
+      (tag !== initialTag ||
+        website !== initialWebsite ||
+        username !== initialUsername ||
+        password !== initialPassword ||
+        folderID !== '0')
     ) {
       const item: Item = {
         account: account,
@@ -109,7 +115,7 @@ export default function DisplayModal({
         username,
         password,
         securityLevel,
-        folderID: '0',
+        folderID,
       };
       updateItem(item);
       console.log('Modifiche salvate!');
@@ -156,7 +162,7 @@ export default function DisplayModal({
         </div>
 
         <form className="flex flex-col gap-4 min-w-[280px]" onSubmit={(e) => e.preventDefault()}>
-          {/* Tag */}
+          {/* Campi base */}
           {[{ label: 'label', value: tag, setter: setTag, field: 'tag', ref: tagRef },
             { label: 'language', value: website, setter: setWebsite, field: 'website' },
             { label: 'person', value: username, setter: setUsername, field: 'username' },
@@ -194,6 +200,27 @@ export default function DisplayModal({
             </label>
           ))}
 
+          {/* Dropdown cartella */}
+          {isEditing && (
+            <label className="relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                folder
+              </span>
+              <select
+                value={folderID}
+                onChange={(e) => setFolderID(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded w-full focus:outline-none bg-white"
+              >
+                <option value="0" disabled>Seleziona cartella</option>
+                {folders.map((folder) => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
           {/* Bottoni */}
           {isEditing ? (
             <div className="flex gap-4 mt-6">
@@ -226,3 +253,4 @@ export default function DisplayModal({
     </div>
   );
 }
+

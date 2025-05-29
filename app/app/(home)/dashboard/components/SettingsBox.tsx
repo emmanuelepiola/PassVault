@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useSelection } from "../../context";
 import { useRouter } from "next/navigation";
+import LogoutConfirmationModal from "../components/LogoutConfermationModal";
 
-export default function PasswordGeneratorBox() {
+export default function SettingsBox() {
   const { account, password, changePassword } = useSelection();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -16,6 +16,8 @@ export default function PasswordGeneratorBox() {
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showRepeat, setShowRepeat] = useState(false);
+
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const router = useRouter();
 
@@ -47,7 +49,7 @@ export default function PasswordGeneratorBox() {
     }
   };
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     sessionStorage.clear();
     router.push("/login");
   };
@@ -94,7 +96,7 @@ export default function PasswordGeneratorBox() {
           </button>
           <button
             className="rounded bg-blue-100 text-gray-700 px-3 py-1 text-sm hover:bg-blue-200 transition"
-            onClick={handleLogout}
+            onClick={() => setShowLogoutConfirm(true)}
           >
             Logout
           </button>
@@ -104,10 +106,9 @@ export default function PasswordGeneratorBox() {
       {shouldRender && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
           <div
-            className={`bg-white rounded-lg shadow-lg relative p-6
-              transform transition-all duration-300 ease-in-out
-              ${visible ? "opacity-100 scale-100" : "opacity-0 scale-95"}
-              max-w-md w-full max-h-[90vh] overflow-auto`}
+            className={`bg-white rounded-lg shadow-lg relative p-6 transform transition-all duration-300 ease-in-out ${
+              visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            } max-w-md w-full max-h-[90vh] overflow-auto`}
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Edit Password</h2>
@@ -127,7 +128,7 @@ export default function PasswordGeneratorBox() {
                   type="button"
                   onClick={() => setShowOld((v) => !v)}
                   className="absolute right-2 top-2.5 text-gray-600 hover:text-gray-900"
-                  aria-label={showOld ? "Nascondi password" : "Mostra password"}
+                  aria-label="Toggle password visibility"
                 >
                   <span className="material-symbols-outlined text-base">
                     {showOld ? "visibility_off" : "visibility"}
@@ -148,7 +149,7 @@ export default function PasswordGeneratorBox() {
                   type="button"
                   onClick={() => setShowNew((v) => !v)}
                   className="absolute right-2 top-2.5 text-gray-600 hover:text-gray-900"
-                  aria-label={showNew ? "Nascondi password" : "Mostra password"}
+                  aria-label="Toggle password visibility"
                 >
                   <span className="material-symbols-outlined text-base">
                     {showNew ? "visibility_off" : "visibility"}
@@ -169,7 +170,7 @@ export default function PasswordGeneratorBox() {
                   type="button"
                   onClick={() => setShowRepeat((v) => !v)}
                   className="absolute right-2 top-2.5 text-gray-600 hover:text-gray-900"
-                  aria-label={showRepeat ? "Nascondi password" : "Mostra password"}
+                  aria-label="Toggle password visibility"
                 >
                   <span className="material-symbols-outlined text-base">
                     {showRepeat ? "visibility_off" : "visibility"}
@@ -194,6 +195,14 @@ export default function PasswordGeneratorBox() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <LogoutConfirmationModal
+          onConfirm={confirmLogout}
+          onCancel={() => setShowLogoutConfirm(false)}
+        />
       )}
     </div>
   );

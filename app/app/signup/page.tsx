@@ -151,27 +151,6 @@ export default function Signup() {
           >
             Sign up
           </button>
-
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-black/5"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500 text-sm">Or</span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-2 bg-[#54A9DA]/30 text-gray-900 py-3 px-4 rounded-[50px] hover:bg-[#4898c9]/30 transition-colors font-medium border border-black/5"
-          >
-            <img 
-              src="https://www.google.com/favicon.ico" 
-              alt="Google" 
-              className="w-5 h-5"
-            />
-            Sign up with Google
-          </button>
         </form>
 
         <p className="mt-6 text-center text-[15px] text-gray-600">

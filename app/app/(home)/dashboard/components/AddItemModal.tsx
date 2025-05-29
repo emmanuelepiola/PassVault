@@ -7,7 +7,6 @@ type Props = {
   setIsModalOpen: (value: boolean) => void;
 };
 
-// Funzione per generare una password sicura
 function generateSecurePassword(length = 16): string {
   const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
   let password = '';
@@ -34,16 +33,12 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
   const passwordRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isModalOpen) {
-      setShouldRender(true);
-    }
+    if (isModalOpen) setShouldRender(true);
   }, [isModalOpen]);
 
   useEffect(() => {
     if (shouldRender) {
-      const enterTimeout = requestAnimationFrame(() => {
-        setVisible(true);
-      });
+      const enterTimeout = requestAnimationFrame(() => setVisible(true));
       return () => cancelAnimationFrame(enterTimeout);
     }
   }, [shouldRender]);
@@ -83,13 +78,13 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
     const folderID = (selection === "All Items" || selection === "Password Health") ? "0" : selection;
 
     const newItem: Item = {
-      account: account,
+      account,
       id: ID,
-      tag: tag,
-      website: website,
-      username: username,
-      password: password,
-      folderID: folderID,
+      tag,
+      website,
+      username,
+      password,
+      folderID,
       securityLevel: "unknown",
     };
 
@@ -155,7 +150,7 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
             />
           </label>
 
-          {/* Campo password con 3 icone ravvicinate */}
+          {/* Campo password */}
           <label className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
             <input
@@ -172,20 +167,20 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
             <button
               type="button"
               onClick={() => setPassword(generateSecurePassword())}
-              className="absolute right-[80px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+              className="absolute right-[80px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 flex items-center justify-center"
               aria-label="Generate password"
             >
-              <span className="material-symbols-outlined text-base">autorenew</span>
+              <span className="material-symbols-outlined text-base h-5 w-5">autorenew</span>
             </button>
 
             {/* Mostra/Nascondi password */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-[45px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+              className="absolute right-[45px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 flex items-center justify-center"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              <span className="material-symbols-outlined text-base">
+              <span className="material-symbols-outlined text-base h-5 w-5">
                 {showPassword ? 'visibility_off' : 'visibility'}
               </span>
             </button>
@@ -194,10 +189,10 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
             <button
               type="button"
               onClick={copyToClipboard}
-              className="absolute right-[10px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900"
+              className="absolute right-[10px] top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 flex items-center justify-center"
               aria-label="Copy password"
             >
-              <span className="material-symbols-outlined text-base">
+              <span className="material-symbols-outlined text-base h-5 w-5">
                 {copied ? 'done_all' : 'content_copy'}
               </span>
             </button>
