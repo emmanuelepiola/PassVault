@@ -12,6 +12,7 @@ type Props = {
   username: string;
   password: string;
   securityLevel: string;
+  folderID: string;
 };
 
 export default function DisplayModal({
@@ -23,6 +24,7 @@ export default function DisplayModal({
   username: initialUsername,
   password: initialPassword,
   securityLevel: initialSecurityLevel,
+  folderID: initialFolderID,
 }: Props) {
   const [shouldRender, setShouldRender] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -34,7 +36,23 @@ export default function DisplayModal({
   const [username, setUsername] = useState(initialUsername);
   const [password, setPassword] = useState(initialPassword);
   const [securityLevel, setSecurityLevel] = useState<string>(initialSecurityLevel);
-  const [folderID, setFolderID] = useState('0');
+  const [folderID, setFolderID] = useState(initialFolderID);
+
+  useEffect(() => {
+    setTag(initialTag);
+    setWebsite(initialWebsite);
+    setUsername(initialUsername);
+    setPassword(initialPassword);
+    setSecurityLevel(initialSecurityLevel);
+    setFolderID(initialFolderID);
+  }, [
+    initialTag,
+    initialWebsite,
+    initialUsername,
+    initialPassword,
+    initialSecurityLevel,
+    initialFolderID,
+  ]);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const hasShownAlertRef = useRef(false);
@@ -92,7 +110,7 @@ export default function DisplayModal({
     setWebsite(initialWebsite);
     setUsername(initialUsername);
     setPassword(initialPassword);
-    setFolderID('0');
+    setFolderID(initialFolderID);
     setCopiedField(null);
     setIsEditing(false);
     document.activeElement instanceof HTMLElement && document.activeElement.blur();
@@ -105,7 +123,7 @@ export default function DisplayModal({
         website !== initialWebsite ||
         username !== initialUsername ||
         password !== initialPassword ||
-        folderID !== '0')
+        folderID !== initialFolderID)
     ) {
       const item: Item = {
         account: account,
@@ -115,9 +133,10 @@ export default function DisplayModal({
         username,
         password,
         securityLevel,
-        folderID,
+        folderID: folderID === '0' ? null : folderID,
       };
       updateItem(item);
+      setFolderID(folderID);
       console.log('Modifiche salvate!');
       hasShownAlertRef.current = true;
     }
@@ -135,6 +154,16 @@ export default function DisplayModal({
       setIsEditing(false);
     }
   };
+
+  // Trova la cartella selezionata
+  const selectedFolder = folders.find((f) => f.id === folderID);
+  const isSharedFolder = selectedFolder?.shared === true;
+  const isOwner = selectedFolder?.ownerEmail === account; // account è l'email dell'utente loggato
+  const canMove = !isSharedFolder || isOwner;
+  // LOG per debug
+  console.log('folderID:', folderID);
+  console.log('selectedFolder:', selectedFolder);
+  console.log('folders:', folders);
 
   if (!shouldRender) return null;
 
@@ -201,7 +230,7 @@ export default function DisplayModal({
           ))}
 
           {/* Dropdown cartella */}
-          {isEditing && (
+          {isEditing ? (
             <label className="relative">
               <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                 folder
@@ -210,17 +239,37 @@ export default function DisplayModal({
                 value={folderID}
                 onChange={(e) => setFolderID(e.target.value)}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded w-full focus:outline-none bg-white"
+                disabled={!canMove}
               >
-                <option value="0" disabled>Seleziona cartella</option>
+                <option value="0">
+                  All Items
+                </option>
                 {folders.map((folder) => (
                   <option key={folder.id} value={folder.id}>
                     {folder.label}
                   </option>
                 ))}
               </select>
+              {!canMove && (
+                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-red-500">
+                  You cannot move items from a shared folder unless you are the owner
+                </span>
+              )}
             </label>
+          ) : (
+            <div className="relative pl-10 py-2 border border-gray-300 rounded w-full bg-gray-50 flex items-center">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                folder
+              </span>
+              <span className="text-gray-700">
+                {folderID === '0'
+                  ? 'All Items'
+                  : selectedFolder
+                    ? selectedFolder.label
+                    : '...'}
+              </span>
+            </div>
           )}
-
           {/* Bottoni */}
           {isEditing ? (
             <div className="flex gap-4 mt-6">
@@ -253,4 +302,3 @@ export default function DisplayModal({
     </div>
   );
 }
-

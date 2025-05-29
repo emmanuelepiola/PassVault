@@ -117,6 +117,7 @@ export default function PasswordItem({
         username={username}
         password={password}
         securityLevel={securityLevel}
+        folderID={folderID}
       />
 
       {/* ✅ Modal di conferma eliminazione */}

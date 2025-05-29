@@ -308,6 +308,7 @@ const updateItem = async (item: Item) => {
         website: item.website,
         username: item.username,
         password: item.password,
+        folder_id: item.folderID, 
       }),
     });
 
@@ -315,7 +316,6 @@ const updateItem = async (item: Item) => {
     if (response.ok) {
       console.log('Elemento aggiornato:', data);
 
-      // Aggiorna lo stato locale con il livello di sicurezza restituito dal backend
       setItems((prevItems) =>
         prevItems.map((prevItem) =>
           prevItem.id === item.id
@@ -323,7 +323,7 @@ const updateItem = async (item: Item) => {
             : prevItem
         )
       );
-      getItems()
+      getItems();
     } else {
       console.error('Errore durante l\'aggiornamento dell\'elemento:', data.error);
     }
