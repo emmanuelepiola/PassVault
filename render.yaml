@@ -1,6 +1,6 @@
 databases:
   - name: pv-postgres
-    databaseName: PV
+    databaseName: pv
     user: francesco
     plan: free
 
@@ -10,8 +10,6 @@ services:
     env: docker
     repo: https://github.com/emmanuelepiola/PassVault
     dockerfilePath: ./backend/Dockerfile
-    buildCommand: ""
-    startCommand: ""
     plan: free
     autoDeploy: true
     envVars:
@@ -28,7 +26,7 @@ services:
           name: pv-postgres
           property: password
       - key: DB_NAME
-        value: PV
+        value: pv
       - key: ENCRYPTION_KEY
         value: 12345678901234567890123456789012
       - key: IV
@@ -39,7 +37,5 @@ services:
     env: docker
     repo: https://github.com/emmanuelepiola/PassVault
     dockerfilePath: ./app/Dockerfile
-    buildCommand: ""
-    startCommand: "sh -c 'npm install tw-animate-css && npm run dev'"
     plan: free
     autoDeploy: true
