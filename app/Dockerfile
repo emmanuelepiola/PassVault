@@ -7,8 +7,11 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copia tutto il resto
-COPY . .
+# Copia tutto il resto 
+# COPY . .
+
+# Copia il resto dei file dell'app
+COPY app .
 
 # Espone la porta 3000
 EXPOSE 3000
