@@ -22,35 +22,34 @@ app.use(bodyParser.json());
 
 // Middleware per gestire le richieste CORS
 app.use((req, res, next) => {
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'https://localhost:3000',
-    process.env.FRONTEND_URL,
-    `https://${process.env.FRONTEND_URL}`, // In case FRONTEND_URL is just the hostname
-    'https://frontend-5mhu.onrender.com' // Hardcoded for your specific deployment
-  ].filter(Boolean); // Remove any undefined values
-
-  const origin = req.headers.origin;
-  console.log('Request origin:', origin);
-  console.log('Allowed origins:', allowedOrigins);
-  
-  // Check if origin is from onrender.com domain (more permissive for Render)
-  const isRenderOrigin = origin && origin.includes('onrender.com') && origin.includes('frontend');
-  
-  if (allowedOrigins.includes(origin) || isRenderOrigin) {
-    res.header('Access-Control-Allow-Origin', origin);
-    console.log('CORS: Origin allowed');
-  } else {
-    console.log('CORS: Origin blocked');
-  }
-  
+  // Very permissive CORS for production debugging
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');  
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'false'); // Set to false when using wildcard origin
+  
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
   next();
+});
+
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'PassVault Backend is running',
+    timestamp: new Date().toISOString(),
+    env: {
+      NODE_ENV: process.env.NODE_ENV,
+      DB_HOST: process.env.DB_HOST ? 'configured' : 'missing',
+      FRONTEND_URL: process.env.FRONTEND_URL || 'not set'
+    }
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', service: 'passvault-backend' });
 });
 
 //==================== ENDPOINT PER AUTENTICAZIONE ==========================
