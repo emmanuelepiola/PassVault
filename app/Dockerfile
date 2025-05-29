@@ -4,11 +4,11 @@ FROM node:18
 WORKDIR /app
 
 # Copia i file necessari per npm install
-COPY app/package.json app/package-lock.json ./
+COPY package.json package-lock.json ./
 RUN npm install
 
 # Copia tutto il codice dell'app
-COPY app .
+COPY . .
 
 # Build the Next.js application for production
 RUN npm run build
