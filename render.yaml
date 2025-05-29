@@ -54,3 +54,5 @@ services:
           type: web
           name: backend
           property: host
+      - key: NEXT_PUBLIC_GOOGLE_CLIENT_ID
+        value: your-google-client-id-here
