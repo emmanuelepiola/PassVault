@@ -12,7 +12,16 @@ const { encrypt, decrypt } = require('./encryption.js');
 const pool = require('./db');
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
+
+console.log('Starting PassVault Backend...');
+console.log('Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
+  PORT: port,
+  DB_HOST: process.env.DB_HOST ? 'set' : 'missing',
+  DB_USER: process.env.DB_USER ? 'set' : 'missing',
+  DB_NAME: process.env.DB_NAME ? 'set' : 'missing'
+});
 
 // Inizializza il client OAuth2
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -852,7 +861,33 @@ async function getPasswordHealth(password) {
   return 1;
 }
 
+// Test database connection on startup
+async function testDatabaseConnection() {
+  try {
+    console.log('Testing database connection...');
+    const result = await pool.query('SELECT NOW()');
+    console.log('Database connected successfully at:', result.rows[0].now);
+    return true;
+  } catch (error) {
+    console.error('Database connection failed:', error.message);
+    console.error('DB Config:', {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER
+    });
+    return false;
+  }
+}
+
 // Avvia il server
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server also accessible at https://backend-5mhu.onrender.com`);
+  
+  // Test database connection
+  const dbConnected = await testDatabaseConnection();
+  if (!dbConnected) {
+    console.error('WARNING: Database connection failed. Some features may not work.');
+  }
 });
