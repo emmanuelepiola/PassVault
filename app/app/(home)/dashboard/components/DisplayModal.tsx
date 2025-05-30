@@ -134,7 +134,7 @@ export default function DisplayModal({
         password,
         securityLevel: securityLevel as "low" | "medium" | "high",
         folderID: folderID === '0' ? null : folderID,
-        sharedFolder: isSharedFolder,
+        ownerEmail: isSharedFolder ? selectedFolder?.ownerEmail : account,
       };
       updateItem(item);
       setFolderID(folderID);
