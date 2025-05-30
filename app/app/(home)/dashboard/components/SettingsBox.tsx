@@ -66,8 +66,12 @@ export default function SettingsBox() {
 
   return (
     <div className="w-full flex flex-col gap-5">
-      <div className="w-full py-4 pl-4 pr-20 border-gray-200 border-[0.5px] bg-gray-100 text-center text-lg font-mono break-all relative">
-        {/* Placeholder */}
+      <div className="w-full h-20 py-4 pl-4 pr-4 border-gray-200 border-[0.5px] bg-gray-100 text-center text-lg font-mono break-all relative">
+        <svg className="w-full h-full" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="90" cy="90" r="90" fill="#54A9DA" />
+          <path d="M117 63.5C117 77.5833 105.807 89 92 89C78.1929 89 67 77.5833 67 63.5C67 49.4167 78.1929 38 92 38C105.807 38 117 49.4167 117 63.5Z" fill="white" />
+          <path d="M90.5 63L123 132H58L90.5 63Z" fill="white" />
+        </svg>
       </div>
 
       <div className="flex w-full flex-col gap-3 text-sm text-gray-700">

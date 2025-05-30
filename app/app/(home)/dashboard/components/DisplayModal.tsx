@@ -266,7 +266,7 @@ export default function DisplayModal({
               )}
             </label>
           ) : (
-            <div className="relative pl-10 py-2 border border-gray-300 rounded w-full bg-gray-50 flex items-center">
+            <div className="relative pl-10 py-2 border border-gray-300 rounded w-full bg-white flex items-center">
               <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                 folder
               </span>
