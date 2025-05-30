@@ -56,6 +56,7 @@ export default function FolderButton({
     } else {
       // NON sei il proprietario: elimina solo la condivisione per te
       removeSharedFolderForUser(id, account);
+      
     }
     setIsDeleteModalOpen(false);
   }

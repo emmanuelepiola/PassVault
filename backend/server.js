@@ -682,10 +682,13 @@ app.put('/api/folders/:folderId/remove-shared-user', async (req, res) => {
     }
     const userId = userResult.rows[0].id;
 
-    // Rimuovi la riga dalla tabella folder_users
+    // 1. Elimina tutti gli item creati da questo utente in questa folder
+    await pool.query('DELETE FROM password WHERE folder_id = $1 AND user_id = $2', [folderId, userId]);
+
+    // 2. Rimuovi la riga dalla tabella folder_users
     await pool.query('DELETE FROM folder_users WHERE folder_id = $1 AND user_id = $2', [folderId, userId]);
 
-    res.status(200).json({ message: 'Condivisione rimossa con successo' });
+    res.status(200).json({ message: 'Condivisione rimossa e items eliminati con successo' });
   } catch (err) {
     console.error('Errore durante la rimozione della condivisione:', err);
     res.status(500).json({ error: 'Errore durante la rimozione della condivisione' });

@@ -417,7 +417,12 @@ const removeSharedFolderForUser = async (folderId: string, userEmail: string) =>
       credentials: 'include',
     });
 
-    if (!response.ok) {
+    if (response.ok) {
+      // Refresh come in deleteFolder
+      await getFolders();
+      await getItems();
+      setSelection("All Items");
+    } else {
       const data = await response.json();
       console.error('Errore durante la rimozione della condivisione:', data.error);
     }
