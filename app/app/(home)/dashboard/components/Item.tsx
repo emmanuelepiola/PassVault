@@ -12,7 +12,7 @@ type Props = {
   tag: string;
   website: string;
   securityLevel: SecurityLevel;
-  folderID: string;
+  folderID: string | null;
   username: string;
   password: string;
 };

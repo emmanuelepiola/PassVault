@@ -22,7 +22,7 @@ export type Item = {
   username: string;
   password: string;
   securityLevel: "low" | "medium" | "high" | "unknown"; 
-  folderID: string,
+  folderID: string | null,
   sharedFolder: boolean;
 };
 

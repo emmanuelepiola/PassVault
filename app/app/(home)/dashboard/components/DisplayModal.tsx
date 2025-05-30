@@ -12,7 +12,7 @@ type Props = {
   username: string;
   password: string;
   securityLevel: string;
-  folderID: string;
+  folderID: string | null;
 };
 
 export default function DisplayModal({
@@ -132,8 +132,9 @@ export default function DisplayModal({
         website,
         username,
         password,
-        securityLevel,
+        securityLevel: securityLevel as "low" | "medium" | "high",
         folderID: folderID === '0' ? null : folderID,
+        sharedFolder: isSharedFolder,
       };
       updateItem(item);
       setFolderID(folderID);
@@ -245,7 +246,7 @@ export default function DisplayModal({
                 folder
               </span>
               <select
-                value={folderID}
+                value={folderID || '0'}
                 onChange={(e) => setFolderID(e.target.value)}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded w-full focus:outline-none bg-white"
                 disabled={!canMove}

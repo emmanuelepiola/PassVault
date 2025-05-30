@@ -4,10 +4,9 @@ import Item from "./Item";
 import { useSelection } from "../../context";
 import { useEffect } from "react";
 
-type SecurityLevel = 'low' | 'medium' | 'high' | 'unknown';
+type SecurityLevel = 'low' | 'medium' | 'high';
 
 const securityOrder = {
-  unknown: 0,
   low: 1,
   medium: 2,
   high: 3,
@@ -36,7 +35,7 @@ export default function ItemBox() {
       filteredBySelection = items;
     } else if (selection === "Password Health") {
       filteredBySelection = [...items].sort(
-        (a, b) => securityOrder[a.securityLevel] - securityOrder[b.securityLevel]
+        (a, b) => securityOrder[a.securityLevel as keyof typeof securityOrder] - securityOrder[b.securityLevel as keyof typeof securityOrder]
       );
     } else {
       // Controlla se la selezione è una cartella condivisa o normale
@@ -60,7 +59,7 @@ export default function ItemBox() {
           key={index}
           tag={item.tag}
           website={item.website}
-          securityLevel={item.securityLevel}
+          securityLevel={item.securityLevel as SecurityLevel}
           folderID={item.folderID}
           password={item.password}
           username={item.username}
