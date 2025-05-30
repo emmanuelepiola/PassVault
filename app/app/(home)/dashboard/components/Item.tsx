@@ -15,6 +15,7 @@ type Props = {
   folderID: string | null;
   username: string;
   password: string;
+  ownerEmail: string;
 };
 
 export default function PasswordItem({
@@ -25,10 +26,11 @@ export default function PasswordItem({
   folderID,
   username,
   password,
+  ownerEmail,
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // ✅ Stato per mostrare il modal di conferma
-  const { deleteItem } = useSelection();
+  const { deleteItem, account } = useSelection();
 
   const getSecurityColors = () => {
     switch (securityLevel) {
@@ -90,7 +92,7 @@ export default function PasswordItem({
               {getDisplayDomain(website)}
             </a>
           </div>
-
+      
           <div className="flex items-center gap-1 w-1/4">
             {getSecurityColors()
               .split(' ')
@@ -99,12 +101,18 @@ export default function PasswordItem({
               ))}
           </div>
 
-          <span
-            className="material-symbols-outlined cursor-pointer text-gray-500 hover:text-red-500"
-            onClick={handleDeleteClick}
-          >
-            delete
-          </span>
+            {account === ownerEmail ? (
+              <span
+                className="material-symbols-outlined cursor-pointer text-gray-500 hover:text-red-500"
+                onClick={handleDeleteClick}
+                style={{ minWidth: 24, textAlign: 'center' }} // larghezza icona
+              >
+                delete
+              </span>
+            ) : (
+              <span style={{ minWidth: 24, display: 'inline-block' }} /> // placeholder per mantenere il layout
+            )}
+
         </div>
       </div>
 

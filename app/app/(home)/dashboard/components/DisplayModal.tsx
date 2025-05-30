@@ -159,9 +159,15 @@ export default function DisplayModal({
   function generateSecurePassword(length = 16): string {
     const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
     let password = '';
+    let lastChar = '';
+
     for (let i = 0; i < length; i++) {
-      const randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
+      let randomChar;
+      do {
+        randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
+      } while (randomChar === lastChar); // Evita ripetizioni consecutive
       password += randomChar;
+      lastChar = randomChar;
     }
     return password;
   }

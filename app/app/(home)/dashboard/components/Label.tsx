@@ -80,7 +80,7 @@ export default function Label({ label }: Props) {
         ) : (
           <>
             <label className="pb-0">{displayLabel}</label>
-            {!isSystemLabel && (
+            {!isSystemLabel && folder && account === folder.ownerEmail && (
               <span
                 className="material-symbols-outlined pt-2 text-xl text-gray-500 hover:text-black cursor-pointer"
                 title="Edit label"

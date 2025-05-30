@@ -463,9 +463,11 @@ app.get('/api/items', async (req, res) => {
         p.folder_id, 
         p.security, 
         f.name AS folder_name,
-        f.shared AS folder_shared
+        f.shared AS folder_shared,
+        u.email AS owner_email -- <--- AGGIUNGI QUESTO
       FROM password p
       LEFT JOIN folders f ON p.folder_id = f.id
+      LEFT JOIN users u ON p.user_id = u.id -- <--- AGGIUNGI QUESTO
       WHERE (
         p.user_id = $1
         OR p.folder_id IN (
@@ -500,6 +502,7 @@ app.get('/api/items', async (req, res) => {
           folderName: row.folder_name || 'No Folder',
           securityLevel,
           sharedFolder: row.folder_shared === 1,
+          owner_email: row.owner_email
         };
       })
     );

@@ -63,6 +63,7 @@ export default function ItemBox() {
           folderID={item.folderID}
           password={item.password}
           username={item.username}
+          ownerEmail={item.ownerEmail}
         />
       ))}
     </div>

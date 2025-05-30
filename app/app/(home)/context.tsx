@@ -23,7 +23,7 @@ export type Item = {
   password: string;
   securityLevel: "low" | "medium" | "high" | "unknown"; 
   folderID: string | null,
-  sharedFolder: boolean;
+  ownerEmail: string;
 };
 
 type SelectionContextType = {
@@ -176,6 +176,7 @@ const getItems = async () => {
           folderID: item.folderId || '0', // Se `folder_id` è nullo, assegna '0'
           account: item.user_id, // Supponendo che il backend restituisca `user_id`
           sharedFolder: item.shared || false, // Mappa il campo `sharedFolder` dal backend
+          ownerEmail: item.owner_email || item.user_email || item.userId || "",
         }))
       );
     } else {

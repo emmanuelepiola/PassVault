@@ -7,15 +7,21 @@ type Props = {
   setIsModalOpen: (value: boolean) => void;
 };
 
-function generateSecurePassword(length = 16): string {
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    const randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
-    password += randomChar;
+  function generateSecurePassword(length = 16): string {
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+    let password = '';
+    let lastChar = '';
+
+    for (let i = 0; i < length; i++) {
+      let randomChar;
+      do {
+        randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
+      } while (randomChar === lastChar); // Evita ripetizioni consecutive
+      password += randomChar;
+      lastChar = randomChar;
+    }
+    return password;
   }
-  return password;
-}
 
 export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
   const { ID, selection, setID, postItem, account } = useSelection();
