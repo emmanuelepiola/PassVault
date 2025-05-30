@@ -155,6 +155,15 @@ export default function DisplayModal({
     }
   };
 
+  function generateSecurePassword(length = 16): string {
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      const randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
+      password += randomChar;
+    }
+    return password;
+  }
   // Trova la cartella selezionata
   const selectedFolder = folders.find((f) => f.id === folderID);
   const isSharedFolder = selectedFolder?.shared === true;
@@ -220,7 +229,7 @@ export default function DisplayModal({
               </span>
               {isEditing && field === 'password' && (
                 <span
-                  onClick={() => setter(Math.random().toString(36).slice(-12))}
+                  onClick={() => setter(generateSecurePassword())}
                   className="material-symbols-outlined absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-700 select-none transition-colors"
                 >
                   autorenew
