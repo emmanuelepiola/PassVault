@@ -3,6 +3,8 @@ import { useSelection } from "../../context";
 import { useRouter } from "next/navigation";
 import LogoutConfirmationModal from "../components/LogoutConfermationModal";
 
+{/* Settings box component for the dashboard */}
+
 export default function SettingsBox() {
   const { account, password, changePassword } = useSelection();
   const [isModalOpen, setIsModalOpen] = useState(false);

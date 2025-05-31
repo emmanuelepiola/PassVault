@@ -3,6 +3,8 @@ import SearchBar from "./SearchBar";
 import Section from "./Section"
 import FolderSection from "./FolderSection"
 
+{/* Sidebar component for the dashboard */}
+
 export default function Sidebar() {
   const navigationButtons = [
     { label: "All Items", icon: "apps" },

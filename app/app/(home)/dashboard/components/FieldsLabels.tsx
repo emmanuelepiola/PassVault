@@ -1,3 +1,5 @@
+{/* Labels for the fields in the dashboard */}
+
 export default function FieldsLabels(){
     return(
         <div className="pl-0 pr-0 md:pl-[1.5rem] md:pr-[1.5rem]">

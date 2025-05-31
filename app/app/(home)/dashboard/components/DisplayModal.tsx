@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelection, Item } from '../../context';
 
+{/* Modal for displaying an item in the dashboard */}
+
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (value: boolean) => void;

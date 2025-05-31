@@ -3,6 +3,8 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import './globals.css'
 
+{/* Layout for the app */}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">

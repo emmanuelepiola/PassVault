@@ -2,6 +2,8 @@
 
 import ReactDOM from 'react-dom';
 
+{/* Modal for logging out of the dashboard */}
+
 type LogoutConfirmationModalProps = {
   onConfirm: () => void;
   onCancel: () => void;

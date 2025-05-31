@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import CreateFolderModal from './CreateFolderModal'; 
 
+{/* Label for the folders section in the sidebar */}
+
 type Props = {
   label: string;
   addFolder: (folderName: string) => void;

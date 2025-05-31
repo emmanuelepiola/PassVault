@@ -1,6 +1,8 @@
 'use client'
 import { useSelection } from '../context';
 
+{/* Selection button component for the sidebar */}
+
 type Props = {
     label: string;
     icon: string;

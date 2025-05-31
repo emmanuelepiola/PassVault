@@ -3,6 +3,8 @@
 import Button from "./Button";
 import Label from "./Label";
 
+{/* Section for the buttons in the sidebar */}
+
 type Button = {
   label: string;
   icon: string;

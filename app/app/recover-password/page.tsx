@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+{/* Page for recovering the password */}
+
 export default function RecoverPassword() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');

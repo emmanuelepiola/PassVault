@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Modal from './AddItemModal';
 
+{/* Add button for the dashboard */}
+
 export default function AddButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

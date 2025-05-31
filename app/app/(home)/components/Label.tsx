@@ -1,5 +1,6 @@
 'use client'
 
+{/* Label for the sections in the sidebar */}
 
 type Props = {
   label: string;

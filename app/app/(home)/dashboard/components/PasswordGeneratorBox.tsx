@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Copy, RefreshCw, Check } from "lucide-react";
 
+{/* Password generator box component for the dashboard */}
+
 export default function PasswordGeneratorBox() {
     const [passwordLength, setPasswordLength] = useState(12);
     const [includeUppercase, setIncludeUppercase] = useState(true);

@@ -5,6 +5,8 @@ import DisplayModal from './DisplayModal';
 import DeleteConfirmationModal from '../../components/DeleteConfirmationModal'; 
 import { useSelection } from "../../context";
 
+{/* Item component for the dashboard */}
+
 type SecurityLevel = 'low' | 'medium' | 'high';
 
 type Props = {

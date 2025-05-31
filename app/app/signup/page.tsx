@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+{/* Page for signing up */}
+
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
 import { useSelection } from '../context';
 
+{/* Modal for sharing a folder */}
+
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (value: boolean) => void;

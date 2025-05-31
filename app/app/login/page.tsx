@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 
+{/* Page for logging in */}
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

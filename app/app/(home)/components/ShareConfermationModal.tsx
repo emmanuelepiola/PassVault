@@ -2,6 +2,8 @@
 
 import ReactDOM from 'react-dom';
 
+{/* Modal for sharing a folder */}
+
 type Props = {
   folderName: string;
   isShared: boolean;

@@ -4,6 +4,8 @@ import Item from "./Item";
 import { useSelection } from "../../context";
 import { useEffect } from "react";
 
+{/* Item box component for the dashboard */}
+
 type SecurityLevel = 'low' | 'medium' | 'high';
 
 const securityOrder = {

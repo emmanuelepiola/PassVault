@@ -5,6 +5,8 @@ import Sidebar from "./components/Sidebar";
 import { SelectionProvider } from './context';
 import { useState, useEffect } from "react";
 
+{/* Layout for the dashboard */}
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [activeView, setActiveView] = useState<"sidebar" | "content">("content");
 

@@ -6,6 +6,8 @@ import ShareModal from './ShareModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import ShareConfirmationModal from './ShareConfermationModal'; 
 
+{/* Sidebar's folders button */}
+
 type Props = {
   id: string;
   label: string;

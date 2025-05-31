@@ -5,6 +5,8 @@ import { useSelection } from "../context";
 import SideBarFolderLabel from "./FolderLabel";
 import FolderButton from "./FolderButton";
 
+{/* Section for the folders in the sidebar */}
+
 type Folder = {
   account: string;
   id: string;

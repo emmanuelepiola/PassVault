@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+{/* Context for the dashboard, all the data and the backend communication are managed here */}
+
 export type Folder = {
   account: string;
   id: string;

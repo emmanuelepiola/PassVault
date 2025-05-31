@@ -2,6 +2,8 @@
 
 import ReactDOM from 'react-dom';
 
+{/* Modal for deleting a folder */}
+
 type Props = {
   folderName: string;
   onConfirm: () => void;

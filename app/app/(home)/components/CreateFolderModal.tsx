@@ -3,6 +3,8 @@
 import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
 
+{/* Modal for creating a new folder */}
+
 type Props = {
   onCreate: (folderName: string) => void;
   onClose: () => void;

@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import './globals.css';
 
+{/* Page for the initial logo animation*/}
+
 export default function Logo() {
     const router = useRouter();
     const [fadeOut, setFadeOut] = useState(false);

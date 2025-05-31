@@ -2,6 +2,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSelection, Item } from "../../context";
 
+{/* Modal for adding a new item to the dashboard */}
+
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (value: boolean) => void;

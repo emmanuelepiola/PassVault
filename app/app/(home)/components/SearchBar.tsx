@@ -1,6 +1,8 @@
 import { Menu, Search } from 'lucide-react';
 import { useSelection } from '../context';
 
+{/* Search bar for the dashboard */}
+
 export default function SearchBar() {
   const { searchTerm, setSearchTerm, selection } = useSelection();
 

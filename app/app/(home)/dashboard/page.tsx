@@ -7,6 +7,8 @@ import FieldsLabels from "./components/FieldsLabels";
 import PasswordGeneratorBox from "./components/PasswordGeneratorBox";
 import SettingsBox from "./components/SettingsBox";
 
+{/* Dashboard page */}
+
 export default function Dashboard() {
   const { selection } = useSelection();
 

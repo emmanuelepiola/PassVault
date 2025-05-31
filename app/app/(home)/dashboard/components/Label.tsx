@@ -5,6 +5,8 @@ import AddButton from './AddButton';
 import SearchBar from '../../components/SearchBar';
 import { useSelection, Folder } from '../../context';
 
+{/* Label for the sections in the dashboard */}
+
 type Props = {
   label: string;
 };
