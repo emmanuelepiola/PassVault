@@ -16,7 +16,7 @@ type Props = {
       let randomChar;
       do {
         randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
-      } while (randomChar === lastChar); // Evita ripetizioni consecutive
+      } while (randomChar === lastChar); 
       password += randomChar;
       lastChar = randomChar;
     }
@@ -157,7 +157,6 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
             />
           </label>
 
-          {/* Campo password */}
           <label className="relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
             <input
@@ -170,7 +169,6 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
               required
             />
 
-            {/* Genera password */}
             <button
               type="button"
               onClick={() => setPassword(generateSecurePassword())}
@@ -180,7 +178,6 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
               <span className="material-symbols-outlined text-base h-5 w-5">autorenew</span>
             </button>
 
-            {/* Mostra/Nascondi password */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -191,8 +188,7 @@ export default function AddItemModal({ isModalOpen, setIsModalOpen }: Props) {
                 {showPassword ? 'visibility_off' : 'visibility'}
               </span>
             </button>
-
-            {/* Copia password */}
+          
             <button
               type="button"
               onClick={copyToClipboard}

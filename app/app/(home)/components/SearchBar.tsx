@@ -17,7 +17,6 @@ export default function SearchBar() {
   return (
     <div className="h-[5rem] py-[1rem] pl-[0.8rem] md:h-[4rem] w-full md:pl-[1rem] md:pr-[1rem] md:pt-[1rem] md:pb-[1rem]">
       <div className="h-full w-full flex items-center relative">
-        {/* Icona Menu - solo su mobile */}
         <div className="flex mr-4 md:hidden items-center gap-2">
           <Menu className="text-gray-600 w-10 h-10" onClick={handleMenuClick} />
         </div>

@@ -165,18 +165,16 @@ export default function DisplayModal({
       let randomChar;
       do {
         randomChar = charset.charAt(Math.floor(Math.random() * charset.length));
-      } while (randomChar === lastChar); // Evita ripetizioni consecutive
+      } while (randomChar === lastChar); 
       password += randomChar;
       lastChar = randomChar;
     }
     return password;
   }
-  // Trova la cartella selezionata
   const selectedFolder = folders.find((f) => f.id === folderID);
   const isSharedFolder = selectedFolder?.shared === true;
-  const isOwner = selectedFolder?.ownerEmail === account; // account è l'email dell'utente loggato
+  const isOwner = selectedFolder?.ownerEmail === account; 
   const canMove = !isSharedFolder || isOwner;
-  // LOG per debug
   console.log('folderID:', folderID);
   console.log('selectedFolder:', selectedFolder);
   console.log('folders:', folders);
@@ -207,7 +205,6 @@ export default function DisplayModal({
         </div>
 
         <form className="flex flex-col gap-4 min-w-[280px]" onSubmit={(e) => e.preventDefault()}>
-          {/* Campi base */}
           {[{ label: 'label', value: tag, setter: setTag, field: 'tag', ref: tagRef },
             { label: 'language', value: website, setter: setWebsite, field: 'website' },
             { label: 'person', value: username, setter: setUsername, field: 'username' },
@@ -245,7 +242,6 @@ export default function DisplayModal({
             </label>
           ))}
 
-          {/* Dropdown cartella */}
           {isEditing ? (
             <label className="relative">
               <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -286,7 +282,7 @@ export default function DisplayModal({
               </span>
             </div>
           )}
-          {/* Bottoni */}
+        
           {isEditing ? (
             <div className="flex gap-4 mt-6">
               <button

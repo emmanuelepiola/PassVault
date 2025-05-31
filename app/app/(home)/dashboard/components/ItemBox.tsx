@@ -20,16 +20,14 @@ export default function ItemBox() {
     item.website.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.username.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Aggiorna ID in base a selection
     useEffect(() => {
     if (selection === "All Items" || selection === "Password Health") {
-      setID("0"); // Imposta ID su "0" per "All Items" o "Password Health"
+      setID("0"); 
     } else {
-      setID(selection); // Imposta ID uguale a selection quando è un ID di cartella
+      setID(selection); 
     }
     }, [selection, items]);
 
-    // Filtra gli elementi in base alla selezione
     let filteredBySelection = [];
     if (selection === "All Items") {
       filteredBySelection = items;
@@ -38,13 +36,10 @@ export default function ItemBox() {
         (a, b) => securityOrder[a.securityLevel as keyof typeof securityOrder] - securityOrder[b.securityLevel as keyof typeof securityOrder]
       );
     } else {
-      // Controlla se la selezione è una cartella condivisa o normale
       const selectedFolder = folders.find(folder => folder.id === selection);
       if (selectedFolder?.shared) {
-        // Filtra gli elementi per cartelle condivise
         filteredBySelection = items.filter(item => item.folderID === selection && selectedFolder.shared);
       } else {
-        // Filtra gli elementi per cartelle normali
         filteredBySelection = items.filter(item => item.folderID === selection && !selectedFolder?.shared);
       }
     }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import CreateFolderModal from './CreateFolderModal'; // Assicurati che il path sia corretto
+import CreateFolderModal from './CreateFolderModal'; 
 
 type Props = {
   label: string;

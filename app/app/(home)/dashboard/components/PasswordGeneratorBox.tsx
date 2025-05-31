@@ -7,7 +7,7 @@ export default function PasswordGeneratorBox() {
     const [includeNumbers, setIncludeNumbers] = useState(true);
     const [includeSymbols, setIncludeSymbols] = useState(true);
     const [generatedPassword, setGeneratedPassword] = useState("");
-    const [copied, setCopied] = useState(false); // Stato per feedback copia
+    const [copied, setCopied] = useState(false); 
 
     function generatePassword(
         length: number,
@@ -46,11 +46,10 @@ export default function PasswordGeneratorBox() {
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(generatedPassword);
             } else {
-                // Fallback per Safari/vecchi browser
                 const textarea = document.createElement("textarea");
                 textarea.value = generatedPassword;
-                textarea.style.position = "fixed"; // Evita scroll
-                textarea.style.left = "-9999px"; // Nasconde fuori dallo schermo
+                textarea.style.position = "fixed"; 
+                textarea.style.left = "-9999px"; 
                 document.body.appendChild(textarea);
                 textarea.focus();
                 textarea.select();
@@ -70,9 +69,7 @@ export default function PasswordGeneratorBox() {
 
     return (
         <div className="w-full flex flex-col gap-6">
-            {/* Password output */}
             <div className="w-full py-4 pl-4 pr-20 border-gray-200 border-[0.5px] bg-gray-100 text-center text-lg font-mono break-all relative">
-                {/* Icon buttons */}
                 <div className="absolute right-5 md:top-5 md:right-30 flex gap-2">
                     <button
                         onClick={copyToClipboard}
@@ -92,7 +89,6 @@ export default function PasswordGeneratorBox() {
                 {generatedPassword}
             </div>
 
-            {/* Length slider */}
             <div className="flex items-center pl-8 pr-5 md:pl-[10%] md:pr-[8%] px-5 border-gray-200 border-b-1 pb-5">
                 <label htmlFor="length-slider" className="text-sm bg-white font-medium text-gray-700">
                     Length
@@ -111,7 +107,6 @@ export default function PasswordGeneratorBox() {
                 </div>
             </div>
 
-            {/* Options as pills */}
             <div className="flex w-full flex-col gap-3 text-sm text-gray-700">
                 <div className="flex w-full items-center justify-between border-b-1 border-gray-200 pb-5 px-8 md:px-[10%]">
                     <span>Include Uppercase Letters (A-Z)</span>

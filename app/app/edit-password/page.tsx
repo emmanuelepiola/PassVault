@@ -81,7 +81,7 @@ export default function EditPassword() {
         <h1 className="text-[28px] font-medium text-center text-gray-900 mb-6">Reset Password</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* New Password */}
+
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -101,7 +101,7 @@ export default function EditPassword() {
             </button>
           </div>
 
-          {/* Confirm New Password */}
+ 
           <div className="relative">
             <input
               type={showConfirmPassword ? 'text' : 'password'}

@@ -24,15 +24,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-[100dvh] w-[100dvw] overflow-hidden bg-white">
       <SelectionProvider>
-        {/* Desktop layout */}
         <div className="hidden md:flex h-full w-full flex-row">
           <Sidebar />
           <div className="h-full w-full">{children}</div>
         </div>
 
-        {/* Mobile layout */}
         <div className="relative md:hidden h-full w-full overflow-hidden">
-          {/* Sidebar */}
           <div
             className={`absolute top-0 left-0 h-full w-full transition-transform duration-300 ease-in-out`}
             style={{
@@ -43,7 +40,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Sidebar />
           </div>
 
-          {/* Content */}
           <div
             className={`absolute top-0 left-0 h-full w-full transition-transform duration-300 ease-in-out`}
             style={{

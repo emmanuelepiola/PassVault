@@ -72,12 +72,10 @@ export default function Login() {
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
-        // Ottieni i dettagli dell'utente da Google
         const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${response.access_token}` },
         }).then(res => res.json());
-
-        // Invia l'email al backend
+            
         const backendResponse = await fetch('http://localhost:8000/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

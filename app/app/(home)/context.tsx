@@ -79,7 +79,6 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
   const getAccount = async () => {
     const userId = sessionStorage.getItem('userId');
     if (!userId) {
-      // console.error('Utente non loggato!');
       router.push('/login');
       return;
     }
@@ -107,8 +106,7 @@ export const SelectionProvider = ({ children }: { children: React.ReactNode }) =
 
 const getFolders = async () => {
   const userId = sessionStorage.getItem('userId');
-  if (!userId) {
-    // console.error('Utente non loggato!');
+  if (!userId) { 
     router.push('/login');
     return;
   }
@@ -117,7 +115,7 @@ const getFolders = async () => {
     const response = await fetch(`http://localhost:8000/api/folders?user_id=${userId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // Se necessario per autenticazione
+      credentials: 'include', 
     });
 
     if (response.ok) {
@@ -128,13 +126,13 @@ const getFolders = async () => {
         id: folder.id,
         label: folder.name,
         account: folder.created_by,
-        shared: folder.shared, // Forza il valore come booleano
+        shared: folder.shared, 
         editable: folder.created_by === userId,
         sharedWith: folder.shared_with || [],
         ownerEmail: folder.owner_email
       }));
 
-      setFolders(mappedFolders); //Setting delle cartelle in locale
+      setFolders(mappedFolders); 
 
     } else {
       console.error('Errore nel recupero delle cartelle:', response.statusText);
@@ -147,24 +145,21 @@ const getFolders = async () => {
 const getItems = async () => {
   const userId = sessionStorage.getItem('userId');
   if (!userId) {
-    // console.error('Utente non loggato!');
     router.push('/login');
     return;
   }
 
   try {
-    // Rimuovi il parametro folder_id dalla query string
     const response = await fetch(`http://localhost:8000/api/items?user_id=${userId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // Se necessario per autenticazione
+      credentials: 'include', 
     });
 
     if (response.ok) {
       const data = await response.json();
       console.log('Elementi recuperati (tutti):', data);
 
-      // Mappa i dati recuperati e aggiorna lo stato
       setItems(
         data.items.map((item: any) => ({
           id: item.id,
@@ -172,10 +167,10 @@ const getItems = async () => {
           website: item.website,
           username: item.username,
           password: item.password,
-          securityLevel: item.securityLevel || 'unknown', // Usa direttamente il valore restituito dal backend
-          folderID: item.folderId || '0', // Se `folder_id` è nullo, assegna '0'
-          account: item.user_id, // Supponendo che il backend restituisca `user_id`
-          sharedFolder: item.shared || false, // Mappa il campo `sharedFolder` dal backend
+          securityLevel: item.securityLevel || 'unknown', 
+          folderID: item.folderId || '0', 
+          account: item.user_id, 
+          sharedFolder: item.shared || false, 
           ownerEmail: item.owner_email || item.user_email || item.userId || "",
         }))
       );
@@ -190,7 +185,6 @@ const getItems = async () => {
 const postFolder = async (folderName: string, isShared: boolean = false) => {
   const userId = sessionStorage.getItem('userId');
   if (!userId) {
-    // console.error('Utente non loggato!');
     router.push('/login');
     return;
   }
@@ -202,7 +196,7 @@ const postFolder = async (folderName: string, isShared: boolean = false) => {
       body: JSON.stringify({
         name: folderName,
         user_id: userId,
-        shared: isShared, // Passa il valore booleano al backend
+        shared: isShared, 
       }),
     });
 
@@ -216,7 +210,7 @@ const postFolder = async (folderName: string, isShared: boolean = false) => {
           id: data.folder_id,
           label: folderName,
           account: account,
-          shared: isShared, // Imposta il flag shared
+          shared: isShared, 
           editable: true,
           sharedWith: [],
           ownerEmail: account,
@@ -233,7 +227,6 @@ const postFolder = async (folderName: string, isShared: boolean = false) => {
 const postItem = async (item: Item) => {
   const userId = sessionStorage.getItem('userId');
   if (!userId) {
-    // console.error('Utente non loggato!');
     router.push('/login');
     return;
   }
@@ -246,7 +239,7 @@ const postItem = async (item: Item) => {
         user_id: userId,
         tag: item.tag,
         username: item.username,
-        password: item.password, // Invia la password in chiaro
+        password: item.password, 
         website: item.website,
         folder_id: item.folderID
       }),
@@ -256,7 +249,6 @@ const postItem = async (item: Item) => {
     if (response.ok) {
       console.log('Item aggiunto:', data);
 
-      // Aggiorna lo stato locale con il livello di sicurezza restituito dal backend
       getItems();
     } else {
       console.error('Errore dal server:', data.error);
@@ -271,7 +263,6 @@ const updateFolder = async (id: string, updates: Partial<Folder>) => {
   const folder = folders.find(folder => folder.id === id);
   if (!folder) return;
 
-  // Conversione: se updates.label esiste, rinominalo in name
   const backendUpdates = { ...updates };
   if ('label' in backendUpdates) {
     backendUpdates.name = backendUpdates.label;
@@ -284,7 +275,7 @@ const updateFolder = async (id: string, updates: Partial<Folder>) => {
       headers: { 'Content-Type': 'application/json' },
       mode: 'cors',
       credentials: 'include',
-      body: JSON.stringify(backendUpdates), // Passa i campi corretti al backend
+      body: JSON.stringify(backendUpdates), 
     });
 
     if (response.ok) {
@@ -343,8 +334,8 @@ const deleteFolder = async (id: string) => {
     if (response.ok) {
       console.log('Cartella eliminata con successo');
       setFolders((prevFolders) => prevFolders.filter(folder => folder.id !== id));
-      setItems((prevItems) => prevItems.filter(item => item.folderID !== id)); // <-- aggiorna anche gli item!
-      setSelection((prevSelection) => (prevSelection === id ? "All Items" : prevSelection)); // <-- aggiungi questa riga
+      setItems((prevItems) => prevItems.filter(item => item.folderID !== id)); 
+      setSelection((prevSelection) => (prevSelection === id ? "All Items" : prevSelection)); 
     } else {
       const data = await response.json();
       console.error('Errore durante l\'eliminazione della cartella:', data.error);
@@ -364,7 +355,6 @@ const deleteItem = async (id: string) => {
     if (response.ok) {
       console.log('Elemento eliminato con successo');
       
-      // Aggiorna lo stato locale rimuovendo l'elemento eliminato
       setItems((prevItems) => prevItems.filter((item) => item.id !== id));
     } else {
       const data = await response.json();
@@ -399,7 +389,6 @@ const shareFolderWithUser = async (email: string, folderId: string) => {
 };
   
 const removeSharedFolderForUser = async (folderId: string, userEmail: string) => {
-  // Aggiorna la cartella localmente
   setFolders((prevFolders) =>
     prevFolders.map((folder) =>
       folder.id === folderId
@@ -408,7 +397,6 @@ const removeSharedFolderForUser = async (folderId: string, userEmail: string) =>
     )
   );
 
-  // Aggiorna anche sul backend
   try {
     const response = await fetch(`http://localhost:8000/api/folders/${folderId}/remove-shared-user`, {
       method: 'PUT',
@@ -418,7 +406,6 @@ const removeSharedFolderForUser = async (folderId: string, userEmail: string) =>
     });
 
     if (response.ok) {
-      // Refresh come in deleteFolder
       await getFolders();
       await getItems();
       setSelection("All Items");

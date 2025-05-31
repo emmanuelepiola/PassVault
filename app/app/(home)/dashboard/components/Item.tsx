@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import DisplayModal from './DisplayModal';
-import DeleteConfirmationModal from '../../components/DeleteConfirmationModal'; // ✅ Aggiunto import per il modal di conferma
+import DeleteConfirmationModal from '../../components/DeleteConfirmationModal'; 
 import { useSelection } from "../../context";
 
 type SecurityLevel = 'low' | 'medium' | 'high';
@@ -29,7 +29,7 @@ export default function PasswordItem({
   ownerEmail,
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // ✅ Stato per mostrare il modal di conferma
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); 
   const { deleteItem, account } = useSelection();
 
   const getSecurityColors = () => {
@@ -45,19 +45,16 @@ export default function PasswordItem({
     }
   };
 
-  // ✅ Modificato per aprire il modal di conferma
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowDeleteConfirm(true);
   };
 
-  // ✅ Funzione chiamata se l’utente conferma l’eliminazione
   const confirmDelete = () => {
     deleteItem(id);
     setShowDeleteConfirm(false);
   };
 
-  // ✅ Funzione chiamata se l’utente annulla
   const cancelDelete = () => {
     setShowDeleteConfirm(false);
   };
@@ -105,12 +102,12 @@ export default function PasswordItem({
               <span
                 className="material-symbols-outlined cursor-pointer text-gray-500 hover:text-red-500"
                 onClick={handleDeleteClick}
-                style={{ minWidth: 24, textAlign: 'center' }} // larghezza icona
+                style={{ minWidth: 24, textAlign: 'center' }} 
               >
                 delete
               </span>
             ) : (
-              <span style={{ minWidth: 24, display: 'inline-block' }} /> // placeholder per mantenere il layout
+              <span style={{ minWidth: 24, display: 'inline-block' }} /> 
             )}
 
         </div>
@@ -128,7 +125,6 @@ export default function PasswordItem({
         folderID={folderID}
       />
 
-      {/* ✅ Modal di conferma eliminazione */}
       {showDeleteConfirm && (
         <DeleteConfirmationModal
           folderName={tag}

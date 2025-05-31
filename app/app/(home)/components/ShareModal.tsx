@@ -10,7 +10,7 @@ type Props = {
   shared: boolean;
   setShared: (value: boolean) => void;
   setSharedWith: (value: string[]) => void;
-  sharedWith: string[]; // <-- aggiunto!
+  sharedWith: string[]; 
   folderAccount: string;
   ownerEmail: string;
 };
@@ -32,7 +32,6 @@ export default function ShareModal({
   
   useEffect(() => {
     setMounted(true);
-    // Escludi la propria email all'inizializzazione
     setLocalSharedWith(sharedWith.filter(email => email && email !== account));
   }, [sharedWith, account]);
 
@@ -58,7 +57,6 @@ export default function ShareModal({
   }
 
   function handleBlur() {
-    // Escludi la propria email prima di inviare
     const cleaned = localSharedWith.filter((v) => v.trim() !== '' && v !== account);
     setSharedWith(cleaned);
 
@@ -70,7 +68,6 @@ export default function ShareModal({
     });
   }
 
-  // Assicura almeno 4 input, anche se sharedWith è più corto
   const inputFields = [...localSharedWith];
   while (inputFields.length < 4) inputFields.push('');
 

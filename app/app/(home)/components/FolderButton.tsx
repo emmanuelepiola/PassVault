@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSelection, Folder } from '../context';
 import ShareModal from './ShareModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
-import ShareConfirmationModal from './ShareConfermationModal'; // ✅ importato
+import ShareConfirmationModal from './ShareConfermationModal'; 
 
 type Props = {
   id: string;
@@ -35,7 +35,7 @@ export default function FolderButton({
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isShareConfirmOpen, setIsShareConfirmOpen] = useState(false); // ✅ nuovo stato
+  const [isShareConfirmOpen, setIsShareConfirmOpen] = useState(false); 
 
   const isSelected = selection === id;
 
@@ -51,10 +51,8 @@ export default function FolderButton({
 
   function confirmDelete() {
     if (ownerEmail === account) {
-      // Sei il proprietario: elimina la cartella dal database
       deleteFolder(id);
     } else {
-      // NON sei il proprietario: elimina solo la condivisione per te
       removeSharedFolderForUser(id, account);
       
     }
@@ -67,11 +65,11 @@ export default function FolderButton({
 
   function handleShare(e: React.MouseEvent) {
     e.stopPropagation();
-    setIsShareConfirmOpen(true); // ✅ apri conferma
+    setIsShareConfirmOpen(true); 
   }
 
   function confirmShareToggle() {
-    updateFolder(id, { shared: !shared }); // ✅ cambia stato
+    updateFolder(id, { shared: !shared }); 
     setIsShareConfirmOpen(false);
   }
 
@@ -85,7 +83,7 @@ export default function FolderButton({
   }
 
   function setSharedWith(updated: string[]) {
-    // Placeholder per update future
+    
   }
 
   return (
@@ -108,7 +106,7 @@ export default function FolderButton({
             {label}
           </span>
 
-          {/* Icona delete */}
+          
           <div className="absolute right-[-0.5rem] top-0">
             <span
               className="material-symbols-outlined text-sm text-gray-400 hover:text-red-700 cursor-pointer"
@@ -119,7 +117,7 @@ export default function FolderButton({
             </span>
           </div>
 
-          {/* Icone share & people */}
+          
           <div className="absolute right-[1.2rem] top-0 flex items-center">
             {ownerEmail === account && (
               <span
@@ -141,7 +139,7 @@ export default function FolderButton({
               </span>
             )}
 
-            {/* Share modal */}
+            
             <ShareModal
               sharedWith={sharedWith}
               setSharedWith={setSharedWith}
@@ -157,7 +155,7 @@ export default function FolderButton({
         </div>
       </div>
 
-      {/* Delete confirmation modal */}
+      
       {isDeleteModalOpen && (
         <DeleteConfirmationModal
           folderName={label}
@@ -166,7 +164,6 @@ export default function FolderButton({
         />
       )}
 
-      {/* Share confirmation modal ✅ */}
       {isShareConfirmOpen && (
         <ShareConfirmationModal
           folderName={label}

@@ -24,10 +24,8 @@ export default function FolderSection({ label }: Props) {
   const { folders, ID, updateFolder, postFolder, account } = useSelection();
 
 const handleAddFolder = async (folderName: string) => {
-  // Determina se la cartella deve essere condivisa
   const isShared = label === "Shared";
 
-  // Crea la cartella con il flag shared corretto
   await postFolder(folderName, isShared);
 };
   const filteredFolders = folders.filter(folder => {
@@ -42,15 +40,12 @@ const handleAddFolder = async (folderName: string) => {
       <SideBarFolderLabel label={label} addFolder={handleAddFolder} />
       {filteredFolders.map((folder, i) => (
         <FolderButton
-          folderAccount={account}
           key={i}
           id={folder.id}
           label={folder.label}
           icon={folder.shared ? "folder_shared" : "folder"}
           shared={folder.shared}
           sharedWith={folder.sharedWith}
-          editable={folder.editable}
-          onLabelChange={(newLabel) => updateFolder(folder.id, { label: newLabel })} // Usa updateFolder
           folderAccount={folder.account}
           ownerEmail={folder.ownerEmail}
         />

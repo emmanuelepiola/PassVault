@@ -66,7 +66,7 @@ export default function Label({ label }: Props) {
         <SearchBar />
       </div>
 
-      {/* Desktop Label */}
+
       <div className="hidden md:flex items-center space-x-2 text-4xl">
         {isEditing ? (
           <input

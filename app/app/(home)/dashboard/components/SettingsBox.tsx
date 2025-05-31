@@ -119,7 +119,6 @@ export default function SettingsBox() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {/* Old Password */}
               <div className="relative">
                 <input
                   type={showOld ? "text" : "password"}
@@ -140,7 +139,6 @@ export default function SettingsBox() {
                 </button>
               </div>
 
-              {/* New Password */}
               <div className="relative">
                 <input
                   type={showNew ? "text" : "password"}
@@ -161,7 +159,6 @@ export default function SettingsBox() {
                 </button>
               </div>
 
-              {/* Repeat Password */}
               <div className="relative">
                 <input
                   type={showRepeat ? "text" : "password"}
@@ -200,8 +197,6 @@ export default function SettingsBox() {
           </div>
         </div>
       )}
-
-      {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
         <LogoutConfirmationModal
           onConfirm={confirmLogout}
